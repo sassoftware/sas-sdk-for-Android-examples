@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="2dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+        <com.sas.android.visualanalytics.report.view.ReportView
+            android:id="@+id/reportView"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            >
+        </com.sas.android.visualanalytics.report.view.ReportView>
+    </LinearLayout>
+
+</RelativeLayout>

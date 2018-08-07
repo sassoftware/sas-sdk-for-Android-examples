@@ -1,0 +1,8 @@
+<resources>
+    <color name="sas_sdk_actionModeBackground">#F44336</color>
+    <color name="sas_sdk_actionModeStatusBar">#D32F2F</color>
+    <color name="sas_sdk_colorAccentDark">#dd3500</color>
+    <color name="sas_sdk_colorAccent">#FF5722</color>
+    <color name="sas_sdk_colorPrimaryDark">#388E3C</color>
+    <color name="sas_sdk_colorPrimary">#4CAF50</color>
+</resources>

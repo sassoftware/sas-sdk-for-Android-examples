@@ -1,0 +1,9 @@
+# Gradle/Android Studio boilerplate
+build/
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+.idea/
+*.iml
+local.properties
