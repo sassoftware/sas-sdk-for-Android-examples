@@ -6,6 +6,9 @@ This repository contains Android Studio projects illustrating the use of the SAS
 
 * Access and download the maven repository (mavenrepo.zip) from the [developer.sas.com Mobile SDK site] (https://developer.sas.com/guides/mobile-sdk.html).
 * Unzip mavenrepo.zip to a location such as: [/tmp/mavenrepo](file:///tmp/mavenrepo/).
+* Define an environment variable that points to the location:
+
+		export MOBILEBI_MAVEN_REPO_URL=file:///tmp/mavenrepo
 
 
 ## Build and Run Example Apps
