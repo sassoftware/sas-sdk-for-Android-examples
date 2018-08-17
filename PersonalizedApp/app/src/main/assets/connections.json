@@ -1,0 +1,16 @@
+{
+  "servers": [
+    {
+      "isDemo": true,
+      "reportIds": [
+        "03db38a7-ff39-460e-9aca-3ee108c10140",
+        "cd4205df-44a8-448a-a174-765f89abe058"
+      ],
+      "serverDescription": "VA Try Before You Buy Server",
+      "serverHostName": "tbub.sas.com",
+      "serverPort": 443,
+      "useGuestMode": true,
+      "useSSL": true
+    }
+  ]
+}
