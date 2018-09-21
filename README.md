@@ -2,7 +2,7 @@
 
 This repository contains Android Studio projects illustrating the use of the SAS SDK for Android which enables Android developers to build customized apps that include content from [SAS® Visual Analytics](https://www.sas.com/en_us/software/visual-analytics.html). The SAS SDK lets you build mobile apps that you can personalize, preconfigure, customize, and manage to meet your exact requirements.
 
-### SDK setup
+### SDK Setup
 
 * Access and download the maven repository (mavenrepo.zip) from the [developer.sas.com Mobile SDK site] (https://developer.sas.com/guides/mobile-sdk.html).
 * Unzip mavenrepo.zip to a location such as: [/tmp/mavenrepo](file:///tmp/mavenrepo/).
@@ -39,11 +39,11 @@ Examples:
 * [CustomApp](CustomApp)
 
 ### Manage
-If you manage and secure your mobile devices with a Mobile Device Management (MDM) solution, you can integrate your mobile apps with your MDM solution by using the SAS SDK. This is done by providing custom implementations of the various interfaces in [SASManagerContext](https://developer.sas.com/sdk/mobile/android/doc/v8.3.0/toolkit/com.sas.android.visualanalytics.sdk/-s-a-s-manager-context/index.html), namely:
+If you manage and secure your mobile devices with a Mobile Device Management (MDM) solution, you can integrate your mobile apps with your MDM solution by using the SAS SDK. This is done by providing custom implementations of the various interfaces in [SASManagerContext](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-s-a-s-manager-context/index.html), namely:
  
-* [FileHandler](https://developer.sas.com/sdk/mobile/android/doc/v8.3.0/toolkit/com.sas.android.visualanalytics.sdk/-file-handler/index.html)
-* [HttpHandler](https://developer.sas.com/sdk/mobile/android/doc/v8.3.0/toolkit/com.sas.android.visualanalytics.sdk/-http-handler/index.html)
-* [ShareHandler](https://developer.sas.com/sdk/mobile/android/doc/v8.3.0/toolkit/com.sas.android.visualanalytics.sdk/-share-handler/index.html)
+* [FileHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-file-handler/index.html)
+* [HttpHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-http-handler/index.html)
+* [ShareHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-share-handler/index.html)
 * [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences)
 
 

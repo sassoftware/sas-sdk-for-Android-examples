@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.sas.android.visualanalytics:appbase:8.30'
+    implementation 'com.sas.android.visualanalytics:appbase:8.31'
 }
 
 apply plugin: 'com.trello.victor'
