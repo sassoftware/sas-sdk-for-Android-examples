@@ -1,11 +1,12 @@
 package com.example.simplecustomapp
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
+import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
+import com.sas.android.visualanalytics.sdk.ReportDescriptor
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server
@@ -23,9 +24,8 @@ class MainActivity : AppCompatActivity() {
      * Sample onConnectionComplete() to illustrate the callback from the connection creation process
      */
     private fun onConnectionComplete(result: SASManager.Result) {
-        val srvr = result.server
-        if (srvr != null) {
-            connection = srvr
+        if (result is SASManager.Result.Success) {
+            connection = result.server
             connectionReady()
         }
     }
@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
      * Sample onSubscribeComplete to illustrate the callback from the report subscription process
      */
     private fun onSubscribeComplete(result: Server.Result) {
-        val report = result.report
-        if (report != null) {
+        if (result is Server.Result.Success) {
+            val report = result.report
             reports.add(report)
             reportSubscribed(report)
         }
@@ -53,20 +53,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun reportSubscribed(report: Report) {
-        loadReportViewer(this, report)
+        loadReportViewer(report)
     }
 
     /**
      * Launch custom report view activity. Pass in the report id from SubscribeListener Result
      */
-    private fun loadReportViewer(context: Context, report: Report) {
+    private fun loadReportViewer(report: Report) {
         reportViewController = ReportViewController(this, reportView, report.id).also  {
-            it.addFullScreenListener { fullScreen ->
-                supportActionBar?.run {
-                    if (fullScreen) {
-                        hide()
-                    } else {
-                        show()
+            it.addReportEventListener { reportEvent ->
+                when (reportEvent){
+                    is FullScreenRequest -> supportActionBar?.run {
+                        if (reportEvent.fullScreen) {
+                            hide()
+                        } else {
+                            show()
+                        }
                     }
                 }
             }
@@ -83,10 +85,10 @@ class MainActivity : AppCompatActivity() {
         progressText = findViewById(R.id.progress_text)
         progressText.text = "Creating Connection"
 
-        // create SASManager and have it create connection and subscribe to reports
-        // specified in StartupConnectionDescriptor
-        (application as MainApplication).sasManager.create(StartupConnectionDescriptor(),
-                ::onConnectionComplete,
-                ::onSubscribeComplete)
+        // create SASManager and have it create connection and subscribe to reports listed in
+        // StartupConnectionDescriptor
+        val connectionDescriptor = StartupConnectionDescriptor()
+        (application as MainApplication).sasManager.create(connectionDescriptor,
+                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
     }
 }

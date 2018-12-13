@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
 import kotlinx.android.synthetic.main.activity_report_view.*
 
@@ -25,12 +26,14 @@ internal class ReportViewActivity : AppCompatActivity() {
         // get report id from intent extra and pass it to ReportViewController
         val reportId = intent.getStringExtra(ReportViewActivity.EXTRA_REPORT_ID);
         reportViewController = ReportViewController(this, reportView, reportId).also {
-            it.addFullScreenListener { fullScreen ->
-                supportActionBar?.run {
-                    if (fullScreen) {
-                        hide()
-                    } else {
-                        show()
+            it.addReportEventListener { reportEvent ->
+                when (reportEvent){
+                    is FullScreenRequest -> supportActionBar?.run {
+                        if (reportEvent.fullScreen) {
+                            hide()
+                        } else {
+                            show()
+                        }
                     }
                 }
             }

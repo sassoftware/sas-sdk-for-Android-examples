@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.sas.android.visualanalytics.sdk.ReportDescriptor
 
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
@@ -82,9 +83,8 @@ class MainActivity : AppCompatActivity() {
      * Sample onConnectionComplete() to illustrate the callback from the connection creation process
      */
     private fun onConnectionComplete(result: SASManager.Result) {
-        val srvr = result.server
-        if (srvr != null) {
-            server = srvr
+        if (result is SASManager.Result.Success) {
+            server = result.server
             connectionReady()
         }
     }
@@ -93,10 +93,9 @@ class MainActivity : AppCompatActivity() {
      * Sample onSubscribeComplete to illustrate the callback from the report subscription process
      */
     private fun onSubscribeComplete(result: Server.Result) {
-        val report = result.report
-        if (report != null) {
-            reports.add(report)
-            reportSubscribed(report)
+        if (result is Server.Result.Success) {
+            reports.add(result.report)
+            reportSubscribed()
         }
     }
 
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         progressText.text = "Connection added. Subscribing to reports"
     }
 
-    private fun reportSubscribed(report: Report) {
+    private fun reportSubscribed() {
         reportsView.visibility = View.VISIBLE
         if (reports.size >= 2)
             progressText.text = ""
@@ -135,10 +134,10 @@ class MainActivity : AppCompatActivity() {
         reportsView.layoutManager = layoutManager
         reportsView.adapter = reportsAdapter
 
-        // create SASManager and have it create connection and subscribe to reports
-        // specified in VATryStartupConnectionDescriptor
-        (application as MainApplication).sasManager.create(VATryStartupConnectionDescriptor(),
-                ::onConnectionComplete,
-                ::onSubscribeComplete)
+        // create SASManager and have it create connection and subscribe to reports listed in
+        // VATryStartupConnectionDescriptor
+        val connectionDescriptor = VATryStartupConnectionDescriptor()
+        (application as MainApplication).sasManager.create(connectionDescriptor,
+                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
     }
 }
