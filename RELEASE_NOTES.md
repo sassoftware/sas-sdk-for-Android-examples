@@ -1,5 +1,15 @@
 # SAS SDK Release Notes
 
+### Version 8.33
+##### Notes:
+- Kotlin version has been updated to 1.3.0
+- Migrated to AndroidX:
+    - For complete instructions on the migration visit: https://developer.android.com/jetpack/androidx/migrate
+    - Example:<br/>
+        // In the build.gradle file <br/>
+        Replace: `implementation com.android.support:appcompat-v7:28.0.0`<br/>
+        With: `implementation androidx.appcompat:appcompat:1.0.2`<br/>
+
 ### Version 8.32
 ##### Notes:
 - minSdkVersion has been updated to 23

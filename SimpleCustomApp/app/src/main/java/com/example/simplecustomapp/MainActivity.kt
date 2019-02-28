@@ -1,9 +1,9 @@
 package com.example.simplecustomapp
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
 import com.sas.android.visualanalytics.sdk.ReportDescriptor

@@ -1,6 +1,6 @@
 package com.example.simplecustomapp
 
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 import com.sas.android.visualanalytics.sdk.SASManagerContext
 import com.sas.android.visualanalytics.sdk.SASManager
 

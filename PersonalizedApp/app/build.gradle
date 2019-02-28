@@ -8,7 +8,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
     compileOptions {
@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.sas.android.visualanalytics:appbase:8.32'
+    implementation 'com.sas.android.visualanalytics:appbase:8.33'
 }
 
 apply plugin: 'com.trello.victor'
