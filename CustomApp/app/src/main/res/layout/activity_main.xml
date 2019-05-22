@@ -16,7 +16,7 @@
         android:paddingLeft="8dp"
         android:visibility="gone"
         />
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/title_view"
@@ -24,7 +24,7 @@
         android:background="#cecece"
         android:visibility="gone"
         >
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
     <LinearLayout
         android:id="@+id/progress_view"
         android:layout_width="match_parent"

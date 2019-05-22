@@ -27,15 +27,15 @@ class MainActivity : AppCompatActivity() {
     private val reports = mutableListOf<Report>()
     private val reportsAdapter = ReportsAdapter()
 
-    private val reportThumbnails = intArrayOf(R.drawable.capital_risk, R.drawable.casino_floor,
-            R.drawable.digital_advertising, R.drawable.wireless_call_quality)
-    private val reportTitles = arrayOf("Capital Exposure and Risk", "Casino Floor Performance",
-            "Digital Advertising", "Wireless Call Quality")
+    private val reportThumbnails = intArrayOf(R.drawable.capital_campaign,
+            R.drawable.retal_insights, R.drawable.warranty_analysis, R.drawable.water_consumption)
+    private val reportTitles = arrayOf("Capital Campaign", "Retail Insights",
+            "Warranty Analysis", "Water Consumption and Monitoring")
     private val reportDescriptions = arrayOf(
-            "This report shows the exposure, capital used and return earned across 10 quarters",
-            "This report shows overall casino revenue. You can view which machines have the greatest impact on revenue as well",
-            "The KPI gauges display average price points for 1,000 impressions on each property",
-            "How many dropped calls are there by switch maker? By carrier? By cell technology?")
+            "This report shows the donations received towards a campaign goal per state over time",
+            "This report shows the performance of three different stores by region and state",
+            "This report shows the annual trends in warranty cost as well as cost forecasts.",
+            "This report shows you the location and trends over time of high water consumers.")
 
     /**
      * RecyclerView adapter that provides a list of buttons to open the subscribed reports
@@ -71,9 +71,9 @@ class MainActivity : AppCompatActivity() {
 
         private fun getReportMetadataIndex(report: Report): Int {
             when (report.name) {
-                "Casino Floor Performance" -> return 1
-                "Digital Advertising" -> return 2
-                "Wireless call quality analysis report" -> return 3
+                "Retail Insights" -> return 1
+                "Warranty Analysis" -> return 2
+                "Water Consumption and Monitoring" -> return 3
                 else -> return 0
             }
         }
@@ -135,8 +135,8 @@ class MainActivity : AppCompatActivity() {
         reportsView.adapter = reportsAdapter
 
         // create SASManager and have it create connection and subscribe to reports listed in
-        // VATryStartupConnectionDescriptor
-        val connectionDescriptor = VATryStartupConnectionDescriptor()
+        // StartupConnectionDescriptor
+        val connectionDescriptor = StartupConnectionDescriptor()
         (application as MainApplication).sasManager.create(connectionDescriptor,
                 connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
     }

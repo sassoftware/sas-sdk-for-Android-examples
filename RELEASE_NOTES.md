@@ -1,5 +1,16 @@
 # SAS SDK Release Notes
 
+### Version 8.34
+##### Notes:
+- The name of a required shared provider key has changed<br/>
+
+	from: `sas_sdk_shared_provider_auth` <br/> 
+	to: `sas_sdk_shared_file_provider_auth` <br/>
+	
+	Please update the property key in `donottranslate.xml`.
+	
+- The CustomApp example now connects to and downloads reports from the [Try Before you Buy server](https://tbub.sas.com).
+
 ### Version 8.33
 ##### Notes:
 - Kotlin version has been updated to 1.3.0

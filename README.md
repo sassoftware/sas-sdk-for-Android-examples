@@ -9,7 +9,8 @@ This repository contains Android Studio projects illustrating the use of the SAS
 * Define an environment variable that points to the location:
 
 		export MOBILEBI_MAVEN_REPO_URL=file:///tmp/mavenrepo
-
+		
+* Please view the [SAS SDK release notes](RELEASE_NOTES.MD) for a rundown on new features and changes.
 
 ## Build and Run Example Apps
 
