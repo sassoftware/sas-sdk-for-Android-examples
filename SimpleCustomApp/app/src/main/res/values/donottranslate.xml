@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sas_sdk_account_type" translatable="false">com.example.simplecustomapp</string>
-    <string name="sas_sdk_shared_provider_auth" translatable="false">com.example.simplecustomapp.shared</string>
+    <string name="sas_sdk_shared_file_provider_auth" translatable="false">com.example.simplecustomapp.shared</string>
 </resources>

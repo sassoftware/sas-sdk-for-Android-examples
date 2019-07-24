@@ -9,6 +9,7 @@
 	
 	Please update the property key in `donottranslate.xml`.
 	
+- Update your app theme to inherit from Theme.MaterialComponents (or a descendant)	
 - The CustomApp example now connects to and downloads reports from the [Try Before you Buy server](https://tbub.sas.com).
 
 ### Version 8.33
