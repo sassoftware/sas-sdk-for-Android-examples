@@ -11,7 +11,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.sas.android.mobilesample"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.sas.android.visualanalytics:toolkit:25.0.1'
+    implementation 'com.sas.android.visualanalytics:toolkit:26.0.0'
 
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'

@@ -1,5 +1,4 @@
 <resources>
     <string name="sas_sdk_application_name">Personalized App</string>
     <string name="sas_sdk_navdrawer_header_title">Personalized App</string>
-    <string name="sas_sdk_navdrawer_header_subtitle">Make your money work for you</string>
 </resources>
