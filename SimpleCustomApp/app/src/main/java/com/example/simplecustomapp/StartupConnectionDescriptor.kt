@@ -15,6 +15,7 @@ internal class StartupConnectionDescriptor : ConnectionDescriptor {
     override val useGuestMode = true
     override val userId = null
     override val useSsl = true
+    override val useStdAuth = false
     val reports = listOf(ReportDescriptor.forFileSystemPath(
             "/Public/Utilities/Water Consumption and Monitoring"))
 }

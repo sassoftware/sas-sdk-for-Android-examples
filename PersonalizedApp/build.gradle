@@ -2,11 +2,10 @@
 
 buildscript {
     ext {
-        cfgGradlePluginVersion = '3.2.1'
-        kotlin_version = '1.3.0'
+        kotlin_version = '1.3.70'
 
-        // Maven URL for a local maven repository. Set this environment variable to point to the repository
-        // if you are using one.
+        // Maven URL for a local maven repository. Set this environment variable to point to the
+        // repository if you are using one.
         mavenLocalURL = System.getenv('MAVEN_LOCAL')
     }
 
@@ -22,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:3.2.1"
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // https://github.com/trello/victor
@@ -30,13 +29,9 @@ buildscript {
     }
 }
 
-def getMavenRepoUrl() {
-    return System.getenv('MOBILEBI_MAVEN_REPO_URL')
-}
-
 allprojects {
     repositories {
-        def mavenRepoUrl = getMavenRepoUrl()
+        def mavenRepoUrl = System.getenv('MOBILEBI_MAVEN_REPO_URL')
         if (mavenRepoUrl) {
             maven {
                 url mavenRepoUrl

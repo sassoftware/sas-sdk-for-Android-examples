@@ -1,32 +1,15 @@
-apply plugin: 'com.android.application'
+apply from: '../../common.gradle'
+apply from: '../../ktlint.gradle'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '29.0.2'
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
-    }
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-    dataBinding {
-        enabled = true
+        versionName "1.1"
     }
 }
 
 dependencies {
-    implementation 'com.sas.android.visualanalytics:appbase:26.0.3'
+    implementation 'com.sas.android.visualanalytics:appbase:27.0.0'
 }
 
 apply plugin: 'com.trello.victor'

@@ -15,9 +15,10 @@ internal class StartupConnectionDescriptor : ConnectionDescriptor {
     override val useGuestMode = true
     override val userId = null
     override val useSsl = true
+    override val useStdAuth = false
     val reports = listOf(
-            ReportDescriptor.forUri("faca01f6-c631-4cbf-b336-6ba186dc632e"),
-            ReportDescriptor.forUri("1ccd88c8-38a6-4473-90e0-8bdb447510a4"),
-            ReportDescriptor.forUri("03db38a7-ff39-460e-9aca-3ee108c10140"),
-            ReportDescriptor.forUri("cd4205df-44a8-448a-a174-765f89abe058"))
+        ReportDescriptor.forUri("faca01f6-c631-4cbf-b336-6ba186dc632e"),
+        ReportDescriptor.forUri("1ccd88c8-38a6-4473-90e0-8bdb447510a4"),
+        ReportDescriptor.forUri("03db38a7-ff39-460e-9aca-3ee108c10140"),
+        ReportDescriptor.forUri("cd4205df-44a8-448a-a174-765f89abe058"))
 }

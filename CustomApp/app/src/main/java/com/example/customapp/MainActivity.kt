@@ -11,13 +11,17 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sas.android.visualanalytics.sdk.ReportDescriptor
 
+import com.sas.android.visualanalytics.sdk.ReportDescriptor
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server
 
 class MainActivity : AppCompatActivity() {
+    /*
+     * Properties/init
+     */
+
     private lateinit var server: Server
     private lateinit var reportsView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
@@ -28,55 +32,55 @@ class MainActivity : AppCompatActivity() {
     private val reportsAdapter = ReportsAdapter()
 
     private val reportThumbnails = intArrayOf(R.drawable.capital_campaign,
-            R.drawable.retal_insights, R.drawable.warranty_analysis, R.drawable.water_consumption)
+        R.drawable.retal_insights, R.drawable.warranty_analysis, R.drawable.water_consumption)
+
     private val reportTitles = arrayOf("Capital Campaign", "Retail Insights",
-            "Warranty Analysis", "Water Consumption and Monitoring")
+        "Warranty Analysis", "Water Consumption and Monitoring")
+
     private val reportDescriptions = arrayOf(
-            "This report shows the donations received towards a campaign goal per state over time",
-            "This report shows the performance of three different stores by region and state",
-            "This report shows the annual trends in warranty cost as well as cost forecasts.",
-            "This report shows you the location and trends over time of high water consumers.")
+        "This report shows the donations received towards a campaign goal per state over time",
+        "This report shows the performance of three different stores by region and state",
+        "This report shows the annual trends in warranty cost as well as cost forecasts.",
+        "This report shows you the location and trends over time of high water consumers.")
+
+    /*
+     * Activity methods
+     */
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        progressView = findViewById(R.id.progress_view)
+        progressText = findViewById(R.id.progress_text)
+        progressText.text = "Creating Connection"
+        reportsView = findViewById(R.id.reports_view)
+        layoutManager = LinearLayoutManager(this)
+        reportsView.layoutManager = layoutManager
+        reportsView.adapter = reportsAdapter
+
+        // create SASManager and have it create connection and subscribe to reports listed in
+        // StartupConnectionDescriptor
+        val connectionDescriptor = StartupConnectionDescriptor()
+        (application as MainApplication).sasManager.create(connectionDescriptor,
+                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
+    }
+
+    /*
+     * Private methods
+     */
+
+    private fun connectionReady() {
+        progressText.text = "Connection added. Subscribing to reports"
+    }
 
     /**
-     * RecyclerView adapter that provides a list of buttons to open the subscribed reports
+     * Launch custom report view activity. Pass in the report id from SubscribeListener Result
      */
-    inner class ReportsAdapter: RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {
-        inner class ReportViewHolder(v: View): RecyclerView.ViewHolder(v)
-
-        override fun getItemCount(): Int {
-            return reports.size
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportViewHolder {
-            val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.report_card_view, parent, false)
-            return ReportViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(holder: ReportsAdapter.ReportViewHolder, position: Int) {
-            val report = reports[position]
-            val metadataIndex = getReportMetadataIndex(report)
-
-            val imageView: ImageView = holder.itemView.findViewById(R.id.card_thumbnail)
-            imageView.setImageResource(reportThumbnails[metadataIndex])
-            val titleView: TextView = holder.itemView.findViewById(R.id.card_title)
-            titleView.text = reportTitles[metadataIndex]
-            val descView: TextView = holder.itemView.findViewById(R.id.card_description)
-            descView.text = reportDescriptions[metadataIndex]
-
-            holder.itemView.setOnClickListener {
-                launchReportViewer(this@MainActivity, reports[position].id)
-            }
-        }
-
-        private fun getReportMetadataIndex(report: Report): Int {
-            when (report.name) {
-                "Retail Insights" -> return 1
-                "Warranty Analysis" -> return 2
-                "Water Consumption and Monitoring" -> return 3
-                else -> return 0
-            }
-        }
+    private fun launchReportViewer(context: Context, id: String) {
+        val intent = Intent(context, ReportViewActivity::class.java)
+        intent.putExtra(ReportViewActivity.EXTRA_REPORT_ID, id)
+        context.startActivity(intent)
     }
 
     /**
@@ -99,10 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun connectionReady() {
-        progressText.text = "Connection added. Subscribing to reports"
-    }
-
     private fun reportSubscribed() {
         reportsView.visibility = View.VISIBLE
         if (reports.size >= 2)
@@ -113,31 +113,61 @@ class MainActivity : AppCompatActivity() {
         reportsAdapter.notifyDataSetChanged()
     }
 
-    /**
-     * Launch custom report view activity. Pass in the report id from SubscribeListener Result
+    /*
+     * Classes
      */
-    private fun launchReportViewer(context: Context, id: String) {
-        val intent = Intent(context, ReportViewActivity::class.java)
-        intent.putExtra(ReportViewActivity.EXTRA_REPORT_ID, id)
-        context.startActivity(intent)
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    /**
+     * RecyclerView adapter that provides a list of buttons to open the subscribed reports
+     */
+    inner class ReportsAdapter: RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {
+        /*
+         * RecyclerView.Adapter methods
+         */
 
-        progressView = findViewById(R.id.progress_view)
-        progressText = findViewById(R.id.progress_text)
-        progressText.text = "Creating Connection"
-        reportsView = findViewById(R.id.reports_view)
-        layoutManager = LinearLayoutManager(this)
-        reportsView.layoutManager = layoutManager
-        reportsView.adapter = reportsAdapter
+        override fun getItemCount(): Int {
+            return reports.size
+        }
 
-        // create SASManager and have it create connection and subscribe to reports listed in
-        // StartupConnectionDescriptor
-        val connectionDescriptor = StartupConnectionDescriptor()
-        (application as MainApplication).sasManager.create(connectionDescriptor,
-                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
+        override fun onBindViewHolder(holder: ReportsAdapter.ReportViewHolder, position: Int) {
+            val report = reports[position]
+            val metadataIndex = getReportMetadataIndex(report)
+
+            val imageView: ImageView = holder.itemView.findViewById(R.id.card_thumbnail)
+            imageView.setImageResource(reportThumbnails[metadataIndex])
+            val titleView: TextView = holder.itemView.findViewById(R.id.card_title)
+            titleView.text = reportTitles[metadataIndex]
+            val descView: TextView = holder.itemView.findViewById(R.id.card_description)
+            descView.text = reportDescriptions[metadataIndex]
+
+            holder.itemView.setOnClickListener {
+                launchReportViewer(this@MainActivity, reports[position].id)
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportViewHolder {
+            val itemView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.report_card_view, parent, false)
+            return ReportViewHolder(itemView)
+        }
+
+        /*
+         * Private methods
+         */
+
+        private fun getReportMetadataIndex(report: Report): Int {
+            when (report.name) {
+                "Retail Insights" -> return 1
+                "Warranty Analysis" -> return 2
+                "Water Consumption and Monitoring" -> return 3
+                else -> return 0
+            }
+        }
+
+        /*
+         * Classes
+         */
+
+        inner class ReportViewHolder(v: View): RecyclerView.ViewHolder(v)
     }
 }
