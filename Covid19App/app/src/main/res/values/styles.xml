@@ -1,0 +1,91 @@
+<resources>
+    <style
+        name="NoActionBar"
+        parent="Theme.AppCompat.NoActionBar"
+    >
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+    </style>
+
+    <style
+        name="LoadingTheme"
+        parent="NoActionBar"
+    >
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style
+        name="SplashTheme"
+        parent="NoActionBar"
+    >
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style
+        name="AppTheme"
+        parent="Theme.MaterialComponents.Light.DarkActionBar"
+    >
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style
+        name="AppTheme.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar"
+    />
+
+    <style
+        name="AppTheme.PopupOverlay"
+        parent="ThemeOverlay.AppCompat.Light"
+    />
+
+    <style
+        name="ToolbarTitleAppearance"
+        parent="android:TextAppearance"
+    >
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style
+        name="ToolbarSubtitleAppearance"
+        parent="android:TextAppearance"
+    >
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="CovidText">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style
+        name="CovidTitle"
+        parent="CovidText"
+    >
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="AddRegionButton">
+        <item name="android:contentDescription">@string/menu_add_region_add</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="backgroundTint">?attr/colorAccent</item>
+        <item name="srcCompat">@drawable/menu_add_region_add</item>
+        <item name="tint">@android:color/white</item>
+    </style>
+
+    <style name="MainView">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+</resources>

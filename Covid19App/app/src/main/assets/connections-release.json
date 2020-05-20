@@ -1,0 +1,15 @@
+{
+  "servers": [
+    {
+      "isDemo": true,
+      "reportIds": [
+        "19d8667e-9746-4620-ac1e-390dff637743"
+      ],
+      "serverDescription": "VA Server",
+      "serverHostName": "tbub.sas.com",
+      "serverPort": 443,
+      "useGuestMode": true,
+      "useSSL": true
+    }
+  ]
+}

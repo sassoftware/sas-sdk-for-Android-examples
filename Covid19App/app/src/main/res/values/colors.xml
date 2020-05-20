@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/card</color>
+    <color name="colorPrimaryDark">@color/card</color>
+    <color name="colorAccent">#0054AE</color>
+    <color name="background">#01111D</color>
+    <color name="card">#091E31</color>
+    <color name="snackbar_action">#d25455</color>
+</resources>
