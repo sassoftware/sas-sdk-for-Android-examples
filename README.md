@@ -49,6 +49,8 @@ If you manage and secure your mobile devices with a Mobile Device Management (MD
 * [ShareHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-share-handler/index.html)
 * [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences)
 
+## License
+This project is licensed under this commercial [license](LICENSE.txt).
 
 ## Support
 For information, advice, and questions on the use of SAS Mobile SDKs please start with the [SAS Visual Analytics online community](https://communities.sas.com/Visual-Analytics).
