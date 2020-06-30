@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background"
+            android:clipChildren="false"
         >
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
@@ -32,7 +33,7 @@
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
                     app:contentScrim="?attr/colorPrimary"
-                    app:expandedTitleMarginBottom="0dp"
+                    app:expandedTitleMarginBottom="8dp"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
                 >
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,8 +113,8 @@
             />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addRegionButton"
-                style="@style/AddRegionButton"
+                android:id="@+id/addLocationButton"
+                style="@style/AddLocationButton"
             />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -25,7 +25,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // https://github.com/trello/victor
-        classpath 'com.trello:victor:1.0.0'
+        classpath 'com.trello:victor:1.1.0'
     }
 }
 

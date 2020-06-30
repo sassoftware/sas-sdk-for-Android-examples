@@ -15,11 +15,11 @@ import androidx.preference.PreferenceManager
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.sas.android.covid19.util.REGION_WORLDWIDE
+import com.sas.android.covid19.util.LOCATION_WORLDWIDE
 import com.sas.android.covid19.util.isWorldwide
 import com.sas.android.covid19.util.logE
 import com.sas.android.covid19.util.logV
-import com.sas.android.covid19.util.notifyObservers
+import com.sas.android.covid19.util.observe
 import com.sas.android.visualanalytics.sdk.SASManager.Result
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server.Result as ServerResult
@@ -31,12 +31,12 @@ class ReportRepository(private val app: MainApplication) {
      */
 
     // Set by MainActivity
-    val allRegions = MutableLiveData<List<String>>()
-    val localRegion = MutableLiveData<String>()
+    val allLocations = MutableLiveData<List<String>>()
+    val localLocation = MutableLiveData<String>()
 
-    // The resolved and added local region, if any
-    val selectedRegions = MutableLiveData<List<String>>().apply {
-        val key = "SETTING_REGIONS"
+    // The resolved and added local location, if any
+    val selectedLocations = MutableLiveData<List<String>>().apply {
+        val key = "SETTING_LOCATIONS"
         val sharedPrefs = app.sasContext.sharedPreferences
             ?: PreferenceManager.getDefaultSharedPreferences(app)
 
@@ -53,14 +53,22 @@ class ReportRepository(private val app: MainApplication) {
         value = sharedPrefs.getString(key, null)?.let { jsonText ->
             val strListType = object : TypeToken<List<String>>() {}.type
             Gson().fromJson<List<String>>(jsonText, strListType)
-        } ?: listOf(REGION_WORLDWIDE, "United States", "China", "Italy", "Spain", "Germany")
+        } ?: listOf(LOCATION_WORLDWIDE, "United States", "Russian Federation", "Brazil",
+            "United Kingdom")
     }
 
-    val selectedIndex = MutableLiveData<Int>().apply {
+    val curIndex = MutableLiveData<Int>().apply {
         value = 0
     }
 
-    val report = MutableLiveData<Report>()
+    val reportStatus = MutableLiveData<Report.ReportStatus>()
+    val report = MutableLiveData<Report>().apply {
+        // Observe forever, notify only when changed
+        observe(null, true) { _, newValue ->
+            reportStatus.value = newValue?.status
+        }
+    }
+
     val error = MutableLiveData<String>()
 
     init {
@@ -77,53 +85,54 @@ class ReportRepository(private val app: MainApplication) {
             }
         }
 
-        // To add the local region to the selected regions, all of these properties must be set
-        allRegions.observeForever { addLocalRegionToSelected() }
-        localRegion.observeForever { addLocalRegionToSelected() }
-        selectedRegions.observeForever { addLocalRegionToSelected() }
+        // To add the local location to the selected locations, all of these properties must be set
+        allLocations.observeForever { addLocalLocationToSelected() }
+        localLocation.observeForever { addLocalLocationToSelected() }
+        selectedLocations.observeForever { addLocalLocationToSelected() }
     }
 
     /*
      * Private methods
      */
 
-    private fun addLocalRegionToSelected() {
+    private fun addLocalLocationToSelected() {
         // Wait until all data are non-null
-        val allRegions = this@ReportRepository.allRegions.value
-        var localRegion = this@ReportRepository.localRegion.value
-        val selectedRegions = this@ReportRepository.selectedRegions.value
-        if (allRegions != null && localRegion != null && selectedRegions != null) {
-            val key = "SETTING_LOCAL_REGION_SET"
+        val allLocations = this@ReportRepository.allLocations.value
+        var localLocation = this@ReportRepository.localLocation.value
+        val selectedLocations = this@ReportRepository.selectedLocations.value
+        if (allLocations != null && localLocation != null && selectedLocations != null) {
+            val key = "SETTING_LOCAL_LOCATION_SET"
             val sharedPrefs = app.sasContext.sharedPreferences
                 ?: PreferenceManager.getDefaultSharedPreferences(app)
 
-            // Set only once so as to not risk re-adding a removed region
+            // Set only once so as to not risk re-adding a removed location
             if (!sharedPrefs.getBoolean(key, false)) {
                 sharedPrefs.edit {
                     putBoolean(key, true)
                 }
 
-                logV("localRegion: $localRegion")
+                logV("localLocation: $localLocation")
 
-                // If localRegion is valid…
-                allRegions.find {
-                    it.equals(localRegion, true)
-                }?.also { convertedRegion ->
-                    if (localRegion != convertedRegion) {
-                        logV("\"$localRegion\" translates to \"$convertedRegion\"")
+                // If localLocation is valid…
+                allLocations.find {
+                    it.equals(localLocation, true)
+                }?.also { convertedLocation ->
+                    if (localLocation != convertedLocation) {
+                        logV("\"$localLocation\" translates to \"$convertedLocation\"")
                     }
 
-                    val selected = convertedRegion in selectedRegions
+                    val selected = convertedLocation in selectedLocations
 
                     // …and not already selected…
                     if (selected) {
-                        logV("\"$convertedRegion\" already selected")
+                        logV("\"$convertedLocation\" already selected")
                     } else {
                         // Insert at beginning, or just after if worldwide is first
-                        val index = if (!selectedRegions.isEmpty() &&
-                            selectedRegions[0].isWorldwide) 1 else 0
-                        logV("Inserting \"$convertedRegion\" at position $index")
-                        this.selectedRegions.value = selectedRegions.with(index, convertedRegion)
+                        val index = if (!selectedLocations.isEmpty() &&
+                            selectedLocations[0].isWorldwide) 1 else 0
+                        logV("Inserting \"$convertedLocation\" at position $index")
+                        this.selectedLocations.value =
+                            selectedLocations.with(index, convertedLocation)
                     }
                 }
             }
@@ -153,7 +162,9 @@ class ReportRepository(private val app: MainApplication) {
                 }
             }, { result ->
                 when (result) {
-                    is ServerResult.Success -> cont.resume(result.report)
+                    is ServerResult.Success -> {
+                        cont.resume(result.report)
+                    }
                     is ServerResult.Failure -> cont.cancel(Exception(result.message))
                 }
             })
@@ -161,19 +172,7 @@ class ReportRepository(private val app: MainApplication) {
     }
 
     private fun onReportStatusUpdate(status: Report.ReportStatus) {
-        if (status == Report.ReportStatus.REPORT_UPDATED) {
-            logV("new report data is available, updating…")
-            report.value?.update { result ->
-                when (result) {
-                    is ServerResult.Success -> {
-                        logV("report update succeeded")
-                        report.notifyObservers()
-                    }
-                    is ServerResult.Failure -> {
-                        logE("report update failed: ${result.message}")
-                    }
-                }
-            }
-        }
+        logV("report status changed: $status")
+        reportStatus.value = status
     }
 }

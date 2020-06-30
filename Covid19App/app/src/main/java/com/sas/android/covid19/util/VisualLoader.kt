@@ -27,7 +27,7 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
         toVisual(repObjProvider, "ve85170", AsBitmap(true, 5f), null, false),
         toVisual(repObjProvider, "ve85253", AsText(false), null, false),
         toVisual(repObjProvider, "ve85240", AsBitmap(false, 1f), null, true),
-        toVisual(repObjProvider, "ve85217", AsBitmap(true, 5f), null, false),
+        toVisual(repObjProvider, "ve88771", AsText(false), null, false),
         toVisual(repObjProvider, "ve85184", AsBitmap(true, 5f), null, false),
         toVisual(repObjProvider, "ve85197", AsBitmap(false, 1f), null, true)
     ).filterNotNull()
@@ -37,7 +37,7 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
         toVisual(repObjProvider, "ve85465", AsBitmap(true, 5f), null, false),
         toVisual(repObjProvider, "ve85483", AsBitmap(true, 5f), null, false),
         toVisual(repObjProvider, "ve85524", AsBitmap(false, 1f), null, true),
-        toVisual(repObjProvider, "ve85474", AsBitmap(true, 5f), null, false),
+        toVisual(repObjProvider, "ve88783", AsText(false), null, false),
         toVisual(repObjProvider, "ve85495", AsBitmap(true, 5f), null, false),
         toVisual(repObjProvider, "ve85528", AsBitmap(false, 1f), null, true)
     ).filterNotNull()
@@ -47,27 +47,27 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
     private val filter = repObjProvider.loadReportObjects("ve87003").firstOrNull() as?
         ReportObject.CategoricalFilter
 
-    private val bitmapCache = mutableMapOf<String, Bitmap?>()
-    private val bitmapMutex = Mutex()
-    private var latestRegion = REGION_WORLDWIDE
+    private val artifactCache = mutableMapOf<String, Any?>()
+    private val artifactMutex = Mutex()
+    private var latestLocation = LOCATION_WORLDWIDE
 
     /*
      * VisualLoader methods
      */
 
-    suspend fun getAllRegions() = listOf(REGION_WORLDWIDE) + filter?.getUniqueValues().orEmpty()
+    suspend fun getAllLocations() = listOf(LOCATION_WORLDWIDE) + filter?.getUniqueValues().orEmpty()
 
     suspend fun getTitleAndPayload(
         context: Context,
-        region: String,
+        location: String,
         index: Int
-    ) = getTitleAndPayload(context, region, getVisualList(region)[index])
+    ) = getTitleAndPayload(context, location, getVisualList(location)[index])
 
     suspend fun getTitleAndPayloadForLegal(context: Context) = legal?.let {
-        getTitleAndPayload(context, REGION_WORLDWIDE, it)
+        getTitleAndPayload(context, LOCATION_WORLDWIDE, it)
     }
 
-    fun getVisualCount(region: String) = getVisualList(region).size
+    fun getVisualCount(location: String) = getVisualList(location).size
 
     fun unload() {
         (worldwide + country + legal).mapNotNull {
@@ -100,12 +100,12 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
     }
 
     private fun clearBitmapCache() {
-        bitmapCache.clear()
+        artifactCache.clear()
     }
 
     private suspend fun getTitleAndPayload(
         context: Context,
-        region: String,
+        location: String,
         visual: Visual
     ): Payload {
         val title = visual.titleRes?.let {
@@ -113,54 +113,76 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
         } ?: visual.obj.title
 
         val setFilter = suspend {
-            if (region != REGION_WORLDWIDE) {
-                filter?.setSelectedValue(region)
-                latestRegion = region
+            if (location != LOCATION_WORLDWIDE) {
+                filter?.setSelectedValue(location)
+                latestLocation = location
             }
         }
 
         val onExpand = if (visual.expandOnClick) setFilter else null
 
         return when (val method = visual.method) {
-            is AsBitmap -> {
-                val key = "${visual.id}:$region"
+            is AsView -> Payload.WithView(title, method.titleIsInner, visual.obj.view, null)
+
+            else -> {
+                val key = "${visual.id}:$location"
 
                 // Avoid the lock if possible
-                val bitmap = if (key in bitmapCache) {
-                    bitmapCache[key]
+                val artifact = if (key in artifactCache) {
+                    artifactCache[key]
                 } else {
                     // Mutex ensures images are loaded serially
-                    bitmapMutex.withLock {
+                    artifactMutex.withLock {
                         // Make another attempt now that we have the lock
-                        if (key in bitmapCache) {
-                            bitmapCache[key]
+                        if (key in artifactCache) {
+                            artifactCache[key]
                         } else {
-                            if (region != latestRegion) {
+                            if (location != latestLocation) {
                                 setFilter()
                             }
 
-                            val ratio = method.ratio
-                            val width = Dimensions.dpToPx(300)
-                            val height = (width / ratio).toInt()
-                            (visual.obj as ReportObject.Visual).renderAsBitmap(width, height)
-                                    .also { bitmap ->
-                                bitmapCache[key] = bitmap
+                            @Suppress("IMPLICIT_CAST_TO_ANY")
+                            when (method) {
+                                is AsBitmap -> {
+                                    val ratio = method.ratio
+                                    val width = Dimensions.dpToPx(300)
+                                    val height = (width / ratio).toInt()
+                                    (visual.obj as ReportObject.Visual).renderAsBitmap(
+                                        width, height)
+                                }
+                                is AsText -> {
+                                    (visual.obj as ReportObject.Text).getTextContent()
+                                }
+                                else -> {
+                                    error("unreachable")
+                                }
+                            }.also { artifact ->
+                                artifactCache[key] = artifact
                             }
                         }
                     }
                 }
 
-                Payload.WithBitmap(title, method.titleIsInner, visual.obj.view, onExpand, bitmap)
+                when (method) {
+                    is AsBitmap -> {
+                        Payload.WithBitmap(title, method.titleIsInner, visual.obj.view, onExpand,
+                            artifact as Bitmap?)
+                    }
+                    is AsText -> {
+                        val text = artifact as CharSequence?
+                        logV("  text: $text")
+                        Payload.WithText(title, method.titleIsInner, visual.obj.view, onExpand,
+                            text)
+                    }
+                    else -> {
+                        error("unreachable")
+                    }
+                }
             }
-            is AsText -> {
-                val text = (visual.obj as ReportObject.Text).getTextContent()
-                Payload.WithText(title, method.titleIsInner, visual.obj.view, onExpand, text)
-            }
-            is AsView -> Payload.WithView(title, method.titleIsInner, visual.obj.view, null)
         }
     }
 
-    private fun getVisualList(region: String) = if (region.isWorldwide) worldwide else country
+    private fun getVisualList(location: String) = if (location.isWorldwide) worldwide else country
 
     private fun toText(view: View?) = view?.let {
         val builder = StringBuilder()

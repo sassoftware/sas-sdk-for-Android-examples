@@ -3,7 +3,6 @@ package com.sas.android.covid19
 import java.util.Locale
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 import android.content.Intent
@@ -14,24 +13,26 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
-import com.sas.android.covid19.add.AddRegionActivity
+import com.sas.android.covid19.add.AddLocationActivity
 import com.sas.android.covid19.databinding.ActivityMainBinding
-import com.sas.android.covid19.manage.ManageRegionsActivity
-import com.sas.android.covid19.util.UiUtil
+import com.sas.android.covid19.manage.ManageLocationsActivity
 import com.sas.android.covid19.util.VisualLoader
 import com.sas.android.covid19.util.logV
 import com.sas.android.covid19.util.observe
 import com.sas.android.covid19.util.setVisibleOrGone
-import com.sas.android.covid19.util.toLocalizedRegion
+import com.sas.android.covid19.util.toLocalizedLocation
 import com.sas.android.visualanalytics.sdk.model.Report
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,32 +42,27 @@ class MainActivity : AppCompatActivity() {
      * Properties/init
      */
 
-    val viewModel: MainViewModel by lazy {
-        ViewModelProviders.of(this, MainViewModelFactory(application as MainApplication))
+    val viewModel by lazy {
+        ViewModelProvider(this, MainViewModelFactory(application as MainApplication))
             .get(MainViewModel::class.java)
     }
 
     val visualLoader = MutableLiveData<VisualLoader>().apply {
         observe(null) { oldValue, newValue ->
             if (oldValue != newValue) {
-                // XXX Remove from try/catch
-                try {
-                    oldValue?.unload()
-                } catch (e: Throwable) {
-                    e.printStackTrace()
-                }
-
-                GlobalScope.launch(Dispatchers.Main) {
-                    viewModel.allRegions.value = newValue?.getAllRegions()
+                lifecycleScope.launch(Dispatchers.Main) {
+                    viewModel.allLocations.value = newValue?.getAllLocations()
                 }
             }
         }
     }
 
+    private var snackbar: Snackbar? = null
+
     lateinit var tabLayoutMediator: TabLayoutMediator
 
-    private val selectedRegions
-        get() = viewModel.selectedRegions.value!!
+    private val selectedLocations
+        get() = viewModel.selectedLocations.value!!
 
     /*
      * Activity methods
@@ -101,6 +97,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         collapsing_toolbar.apply {
+            val avenir = ResourcesCompat.getFont(context, R.font.anfsas_regular)
+            setCollapsedTitleTypeface(avenir)
+            setExpandedTitleTypeface(avenir)
             title = getString(R.string.app_name_full)
         }
 
@@ -110,39 +109,101 @@ class MainActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+        // Pre-load the next off-screen page
+        viewPager.offscreenPageLimit = 1
+
         viewPager.registerOnPageChangeCallback(
             object : ViewPager2.OnPageChangeCallback() {
+                private var state = ViewPager2.SCROLL_STATE_IDLE
+                private var fromIndex: Int? = null
+                private var lastToLocation: String? = null
+
                 override fun onPageSelected(position: Int) {
-                    viewModel.selectedIndex.value = position
+                    viewModel.curIndex.value = position
+                    fromIndex = null
+                    lastToLocation = null
+                }
+
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                    if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
+                        // Don't notify observers unnecessarily
+                        if (fromIndex == null) {
+                            fromIndex = viewModel.curIndex.value ?: 0
+                            viewModel.fromLocation.value = selectedLocations.getOrNull(fromIndex!!)
+                        }
+
+                        var fromIndex = this.fromIndex!!
+
+                        val toLocation = when (position) {
+                            fromIndex -> selectedLocations.getOrNull(fromIndex + 1)
+                            fromIndex - 1 -> selectedLocations.getOrNull(fromIndex - 1)
+                            else -> null
+                        }
+
+                        // Don't notify observers unnecessarily
+                        if (toLocation != lastToLocation) {
+                            viewModel.toLocation.value = toLocation
+                            lastToLocation = toLocation
+                        }
+                    }
+                }
+
+                override fun onPageScrollStateChanged(state: Int) {
+                    this.state = state
+                    if (state == ViewPager2.SCROLL_STATE_IDLE) {
+                        fromIndex = null
+                        lastToLocation = null
+                    }
                 }
             }
         )
 
-        viewModel.selectedIndex.observe(this, Observer<Int?> { selected ->
-            selected?.also {
+        viewModel.curIndex.observe(this, Observer<Int?> { curIndex ->
+            curIndex?.also {
                 collapsing_toolbar.title =
-                    selectedRegions.getOrNull(selected)?.toLocalizedRegion(this)
+                    selectedLocations.getOrNull(curIndex)?.toLocalizedLocation(this)
                 supportActionBar?.subtitle = null
-                addRegionButton.show()
+                addLocationButton.show()
             }
         })
 
-        viewModel.report.observe(this, Observer<Report?> { report ->
-            visualLoader.value = report?.let {
-                val repObjProvider = (application as MainApplication).sasManager
-                    .getReportObjectProvider(report, this, this)
-                VisualLoader(repObjProvider)
+        viewModel.report.observe(this, true) { _, _ ->
+            reportUpdated()
+        }
+
+        viewModel.selectedLocations.observe(this, Observer<List<String>?> {
+            rebuildPagerAdapter()
+        })
+
+        viewModel.reportStatus.observe(this, true) { _, status ->
+            when (status) {
+                Report.ReportStatus.REPORT_UPDATED -> reportUpdated()
+
+                Report.ReportStatus.REPORT_UPDATING -> {
+                    snackbar = Snackbar.make(
+                        addLocationButton,
+                        getString(R.string.activity_main_updating_message),
+                        Snackbar.LENGTH_INDEFINITE
+                    ).apply {
+                        view.setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.snackbar_background
+                            )
+                        )
+                        show()
+                    }
+                }
+                else -> snackbar?.dismiss()
             }
+        }
 
-            rebuildPagerAdapter()
-        })
-
-        viewModel.selectedRegions.observe(this, Observer<List<String>?> {
-            rebuildPagerAdapter()
-        })
-
-        addRegionButton.setOnClickListener {
-            AddRegionActivity.launch(this, true)
+        addLocationButton.setOnClickListener {
+            AddLocationActivity.launch(this, true)
         }
     }
 
@@ -158,7 +219,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_main_manage_locations -> {
-            ManageRegionsActivity.launch(this)
+            ManageLocationsActivity.launch(this)
             true
         }
         R.id.menu_main_send_feedback -> {
@@ -173,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         R.id.menu_main_about -> {
-            GlobalScope.launch(Dispatchers.Main) {
+            lifecycleScope.launch(Dispatchers.Main) {
                 visualLoader.value?.getTitleAndPayloadForLegal(this@MainActivity)?.also { payload ->
                     showExpanded(payload.view, getString(R.string.menu_main_about), null,
                         true)
@@ -205,9 +266,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun rebuildPagerAdapter() {
         // Save as it will get overwritten by new PagerAdapter
-        val selectedIndex = viewModel.selectedIndex.value
-        viewPager.adapter = PagerAdapter(this, selectedRegions)
-        viewPager.setCurrentItem(selectedIndex ?: 0, false)
+        val curIndex = viewModel.curIndex.value
+        viewPager.adapter = PagerAdapter(this, selectedLocations)
+        viewPager.setCurrentItem(curIndex ?: 0, false)
 
         // Page indicator overlay
         if (!::tabLayoutMediator.isInitialized) {
@@ -217,7 +278,16 @@ class MainActivity : AppCompatActivity() {
         }
         tabLayoutMediator.attach()
 
-        tabLayout.setVisibleOrGone(selectedRegions.size > 1)
+        tabLayout.setVisibleOrGone(selectedLocations.size > 1)
+    }
+
+    private fun reportUpdated() {
+        visualLoader.value = viewModel.report.value?.let {
+            val repObjProvider = (application as MainApplication).sasManager
+                .getReportObjectProvider(it, this, this)
+            VisualLoader(repObjProvider)
+        }
+        rebuildPagerAdapter()
     }
 
     private fun setUpLocation() {
@@ -228,7 +298,7 @@ class MainActivity : AppCompatActivity() {
                     Locale.getDefault()).getFromLocation(location.latitude, location.longitude,
                     1).getOrNull(0)?.countryName
                 logV("Got \"$countryName\" from location services")
-                viewModel.localRegion.value = countryName
+                viewModel.localLocation.value = countryName
             }
         }
     }

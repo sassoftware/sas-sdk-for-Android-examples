@@ -6,4 +6,5 @@
     <color name="background">#01111D</color>
     <color name="card">#091E31</color>
     <color name="snackbar_action">#d25455</color>
+    <color name="snackbar_background">#032C49</color>
 </resources>

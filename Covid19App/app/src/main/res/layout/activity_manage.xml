@@ -34,7 +34,7 @@
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addRegionButton"
-        style="@style/AddRegionButton"
+        android:id="@+id/addLocationButton"
+        style="@style/AddLocationButton"
     />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

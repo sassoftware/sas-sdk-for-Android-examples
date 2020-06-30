@@ -37,13 +37,13 @@
             android:theme="@style/LoadingTheme"
         />
         <activity
-            android:name=".add.AddRegionActivity"
-            android:label="@string/activity_add_region"
+            android:name=".add.AddLocationActivity"
+            android:label="@string/activity_add_location"
             android:theme="@style/AppTheme.NoActionBar"
         />
         <activity
-            android:name=".manage.ManageRegionsActivity"
-            android:label="@string/activity_manage_regions"
+            android:name=".manage.ManageLocationsActivity"
+            android:label="@string/activity_manage_locations"
             android:theme="@style/AppTheme.NoActionBar"
         />
         <activity
