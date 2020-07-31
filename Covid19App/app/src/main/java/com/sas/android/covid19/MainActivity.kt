@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 import android.content.Intent
+import android.graphics.Color
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
@@ -16,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -28,12 +29,15 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.sas.android.covid19.add.AddLocationActivity
 import com.sas.android.covid19.databinding.ActivityMainBinding
 import com.sas.android.covid19.manage.ManageLocationsActivity
+import com.sas.android.covid19.util.LOCATION_WORLDWIDE
 import com.sas.android.covid19.util.VisualLoader
 import com.sas.android.covid19.util.logV
 import com.sas.android.covid19.util.observe
 import com.sas.android.covid19.util.setVisibleOrGone
 import com.sas.android.covid19.util.toLocalizedLocation
 import com.sas.android.visualanalytics.sdk.model.Report
+import com.sas.android.visualanalytics.sdk.report.ReportObject
+import com.sas.android.visualanalytics.sdk.report.ReportObjectProvider
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -47,12 +51,60 @@ class MainActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
     }
 
-    val visualLoader = MutableLiveData<VisualLoader>().apply {
-        observe(null) { oldValue, newValue ->
-            if (oldValue != newValue) {
+    private val reportObjectProvider by lazy {
+        MediatorLiveData<ReportObjectProvider?>().apply {
+            // Set viewModel.defaultLocations whenever we get a new ReportObjectProvider
+            observe(null, true) { _, newValue ->
+                (newValue?.loadReportObjects("ve88574")?.firstOrNull() as?
+                        ReportObject.CategoricalFilter)?.also { filter ->
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        viewModel.defaultLocations.value = listOf(LOCATION_WORLDWIDE) +
+                            filter.getUniqueValues()
+                    }
+                }
+            }
+
+            fun recalculate() = viewModel.report.value?.let { report ->
+                viewModel.reportStatus.value?.let { status ->
+                    when (status) {
+                        Report.ReportStatus.REPORT_UNSUBSCRIBED,
+                        Report.ReportStatus.REPORT_UNAVAILABLE -> null
+                        else -> (application as MainApplication).sasManager.getReportObjectProvider(
+                            report, this@MainActivity, this@MainActivity)
+                    }
+                }
+            }
+
+            addSource(viewModel.report) { _ ->
+                value = recalculate()
+            }
+
+            addSource(viewModel.reportStatus) { newValue ->
+                when (newValue) {
+                    Report.ReportStatus.REPORT_UNSUBSCRIBED,
+                    Report.ReportStatus.REPORT_UNAVAILABLE,
+                    Report.ReportStatus.REPORT_UPDATED -> value = recalculate()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    val visualLoader by lazy {
+        MediatorLiveData<VisualLoader?>().apply {
+            // Set viewModel.allLocations whenever we create a new VisualLoader
+            observe(null, true) { _, newValue ->
                 lifecycleScope.launch(Dispatchers.Main) {
                     viewModel.allLocations.value = newValue?.getAllLocations()
                 }
+            }
+
+            fun recalculate() = reportObjectProvider.value?.let {
+                VisualLoader(it)
+            }
+
+            addSource(reportObjectProvider) { _ ->
+                value = recalculate()
             }
         }
     }
@@ -62,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var tabLayoutMediator: TabLayoutMediator
 
     private val selectedLocations
-        get() = viewModel.selectedLocations.value!!
+        get() = viewModel.selectedLocations.value
 
     /*
      * Activity methods
@@ -130,17 +182,19 @@ class MainActivity : AppCompatActivity() {
                     positionOffsetPixels: Int
                 ) {
                     if (state == ViewPager2.SCROLL_STATE_DRAGGING) {
+                        val locations = selectedLocations!!
+
                         // Don't notify observers unnecessarily
                         if (fromIndex == null) {
                             fromIndex = viewModel.curIndex.value ?: 0
-                            viewModel.fromLocation.value = selectedLocations.getOrNull(fromIndex!!)
+                            viewModel.fromLocation.value = locations.getOrNull(fromIndex!!)
                         }
 
                         var fromIndex = this.fromIndex!!
 
                         val toLocation = when (position) {
-                            fromIndex -> selectedLocations.getOrNull(fromIndex + 1)
-                            fromIndex - 1 -> selectedLocations.getOrNull(fromIndex - 1)
+                            fromIndex -> locations.getOrNull(fromIndex + 1)
+                            fromIndex - 1 -> locations.getOrNull(fromIndex - 1)
                             else -> null
                         }
 
@@ -165,14 +219,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.curIndex.observe(this, Observer<Int?> { curIndex ->
             curIndex?.also {
                 collapsing_toolbar.title =
-                    selectedLocations.getOrNull(curIndex)?.toLocalizedLocation(this)
+                    selectedLocations?.getOrNull(curIndex)?.toLocalizedLocation(this)
                 supportActionBar?.subtitle = null
                 addLocationButton.show()
             }
         })
 
-        viewModel.report.observe(this, true) { _, _ ->
-            reportUpdated()
+        visualLoader.observe(this, true) { _, _ ->
+            rebuildPagerAdapter()
         }
 
         viewModel.selectedLocations.observe(this, Observer<List<String>?> {
@@ -180,25 +234,16 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.reportStatus.observe(this, true) { _, status ->
-            when (status) {
-                Report.ReportStatus.REPORT_UPDATED -> reportUpdated()
-
-                Report.ReportStatus.REPORT_UPDATING -> {
-                    snackbar = Snackbar.make(
-                        addLocationButton,
-                        getString(R.string.activity_main_updating_message),
-                        Snackbar.LENGTH_INDEFINITE
-                    ).apply {
-                        view.setBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.snackbar_background
-                            )
-                        )
-                        show()
-                    }
+            if (status == Report.ReportStatus.REPORT_UPDATING) {
+                Snackbar.make(addLocationButton,
+                    getString(R.string.activity_main_updating_message),
+                    Snackbar.LENGTH_LONG
+                ).apply {
+                    setTextColor(Color.WHITE)
+                    setBackgroundTint(
+                        ContextCompat.getColor(context, R.color.snackbar_background))
+                    show()
                 }
-                else -> snackbar?.dismiss()
             }
         }
 
@@ -213,7 +258,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        visualLoader.value = null
+        reportObjectProvider.value = null
         super.onDestroy()
     }
 
@@ -278,25 +323,16 @@ class MainActivity : AppCompatActivity() {
         }
         tabLayoutMediator.attach()
 
-        tabLayout.setVisibleOrGone(selectedLocations.size > 1)
-    }
-
-    private fun reportUpdated() {
-        visualLoader.value = viewModel.report.value?.let {
-            val repObjProvider = (application as MainApplication).sasManager
-                .getReportObjectProvider(it, this, this)
-            VisualLoader(repObjProvider)
-        }
-        rebuildPagerAdapter()
+        tabLayout.setVisibleOrGone(selectedLocations?.size ?: 0 > 1)
     }
 
     private fun setUpLocation() {
         LocationServices.getFusedLocationProviderClient(this).lastLocation.addOnSuccessListener {
                 location ->
             location?.also {
-                val countryName = Geocoder(this,
-                    Locale.getDefault()).getFromLocation(location.latitude, location.longitude,
-                    1).getOrNull(0)?.countryName
+                val countryName = Geocoder(this, Locale.getDefault())
+                    .getFromLocation(location.latitude, location.longitude, 1)
+                    .getOrNull(0)?.countryName
                 logV("Got \"$countryName\" from location services")
                 viewModel.localLocation.value = countryName
             }

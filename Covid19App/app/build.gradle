@@ -4,7 +4,7 @@ apply from: '../../ktlint.gradle'
 android {
     defaultConfig {
         def appVersionMajor = 1
-        def appVersionMinor = 4
+        def appVersionMinor = 5
         def appVersionMicro = 0
 
         // appVersion{Minor,Micro} each get two digits

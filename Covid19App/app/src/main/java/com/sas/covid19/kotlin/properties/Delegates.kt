@@ -90,11 +90,6 @@ object Delegates {
                     intercepted = maxValue
                 }
 
-//              if (intercepted != newValue) {
-//                  Memo.v("intercepted %s: %s -> %s", property.name,
-//                      newValue, intercepted);
-//              }
-
                 intercepted
             }, onChanged)
 

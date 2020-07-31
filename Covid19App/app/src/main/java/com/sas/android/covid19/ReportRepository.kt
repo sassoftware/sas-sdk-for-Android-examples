@@ -15,11 +15,11 @@ import androidx.preference.PreferenceManager
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.sas.android.covid19.util.LOCATION_WORLDWIDE
 import com.sas.android.covid19.util.isWorldwide
 import com.sas.android.covid19.util.logE
 import com.sas.android.covid19.util.logV
 import com.sas.android.covid19.util.observe
+import com.sas.android.covid19.util.observeUntil
 import com.sas.android.visualanalytics.sdk.SASManager.Result
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server.Result as ServerResult
@@ -33,6 +33,7 @@ class ReportRepository(private val app: MainApplication) {
     // Set by MainActivity
     val allLocations = MutableLiveData<List<String>>()
     val localLocation = MutableLiveData<String>()
+    val defaultLocations = MutableLiveData<List<String>>()
 
     // The resolved and added local location, if any
     val selectedLocations = MutableLiveData<List<String>>().apply {
@@ -53,8 +54,16 @@ class ReportRepository(private val app: MainApplication) {
         value = sharedPrefs.getString(key, null)?.let { jsonText ->
             val strListType = object : TypeToken<List<String>>() {}.type
             Gson().fromJson<List<String>>(jsonText, strListType)
-        } ?: listOf(LOCATION_WORLDWIDE, "United States", "Russian Federation", "Brazil",
-            "United Kingdom")
+        } ?: defaultLocations.value
+
+        if (value == null) {
+            defaultLocations.observeUntil(null) { _, newValue ->
+                if (newValue != null) {
+                    value = newValue
+                    true
+                } else false
+            }
+        }
     }
 
     val curIndex = MutableLiveData<Int>().apply {
@@ -101,7 +110,7 @@ class ReportRepository(private val app: MainApplication) {
         var localLocation = this@ReportRepository.localLocation.value
         val selectedLocations = this@ReportRepository.selectedLocations.value
         if (allLocations != null && localLocation != null && selectedLocations != null) {
-            val key = "SETTING_LOCAL_LOCATION_SET"
+            val key = "SETTING_LOCAL_LOCATION_SET_" + localLocation
             val sharedPrefs = app.sasContext.sharedPreferences
                 ?: PreferenceManager.getDefaultSharedPreferences(app)
 

@@ -5,7 +5,7 @@
     <string name="activity_loading_title">COVID-19 TRACKER</string>
     <string name="activity_main_message_failed">Unable to load report. Please check your network connection and try again later.</string>
     <string name="activity_main_title_worldwide">Worldwide</string>
-    <string name="activity_main_updating_message">Updating...</string>
+    <string name="activity_main_updating_message">Updating…</string>
     <string name="activity_manage_locations">Manage locations</string>
     <string name="activity_manage_locations_deleted_message">Location \"%1$s\" deleted.</string>
     <string name="activity_manage_locations_deleted_undo">Undo</string>

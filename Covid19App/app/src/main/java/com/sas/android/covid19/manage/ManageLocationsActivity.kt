@@ -2,6 +2,7 @@ package com.sas.android.covid19.manage
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -104,23 +105,18 @@ class ManageLocationsActivity : AppCompatActivity() {
                         i != position
                     }
 
-                    Snackbar.make(
-                        this@recycler, getString(
-                            R.string.activity_manage_locations_deleted_message,
-                            deleted.toLocalizedLocation(this@ManageLocationsActivity)
-                        ),
+                    Snackbar.make(this@recycler,
+                        getString(R.string.activity_manage_locations_deleted_message,
+                            deleted.toLocalizedLocation(this@ManageLocationsActivity)),
                         Snackbar.LENGTH_LONG
                     ).apply {
                         setActionTextColor(ContextCompat.getColor(context, R.color.snackbar_action))
                         setAction(R.string.activity_manage_locations_deleted_undo) {
                             selectedLocations = selectedLocations.with(position, deleted)
                         }
-                        view.setBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.snackbar_background
-                            )
-                        )
+                        setTextColor(Color.WHITE)
+                        setBackgroundTint(
+                            ContextCompat.getColor(context, R.color.snackbar_background))
                         show()
                     }
                 }

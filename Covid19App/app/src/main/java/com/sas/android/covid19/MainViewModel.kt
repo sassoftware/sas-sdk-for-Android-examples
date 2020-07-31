@@ -10,6 +10,7 @@ class MainViewModel(private val app: MainApplication) : ViewModel() {
 
     val allLocations = repo.allLocations
     val localLocation = repo.localLocation
+    val defaultLocations = repo.defaultLocations
     val selectedLocations = repo.selectedLocations
     val curIndex = repo.curIndex
     val report = repo.report
