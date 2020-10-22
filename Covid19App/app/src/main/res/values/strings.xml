@@ -1,4 +1,7 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:locale="en"
+>
     <string name="activity_add_location">Add location</string>
     <string name="activity_loading_powered_by">Powered by</string>
     <string name="activity_loading_slogan">With the right data and good decisions, the world can find clarity and strength in numbers.</string>
