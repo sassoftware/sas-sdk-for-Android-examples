@@ -149,7 +149,7 @@ class ReportRepository(private val app: MainApplication) {
     }
 
     private suspend fun fetchReport(): Report? {
-        val file = if (BuildConfig.DEBUG) "connections-debug.json" else "connections-release.json"
+        val file = "connections.json"
         var descriptors = try {
             app.sasManager.fromJson(InputStreamReader(app.assets.open(file)), app)
         } catch (e: IOException) {
