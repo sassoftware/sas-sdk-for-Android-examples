@@ -78,7 +78,7 @@ class ReportRepository(private val app: MainApplication) {
         }
     }
 
-    val error = MutableLiveData<String>()
+    val error = MutableLiveData<String?>()
 
     init {
         GlobalScope.launch(Dispatchers.Main) {
