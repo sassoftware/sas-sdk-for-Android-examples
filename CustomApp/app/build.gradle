@@ -3,8 +3,17 @@ apply from: '../../ktlint.gradle'
 
 android {
     defaultConfig {
-        versionCode 1
-        versionName "1.1"
+        def appVersionMajor = 1
+        def appVersionMinor = 2
+        def appVersionMicro = 0
+
+        // appVersion{Minor,Micro} each get two digits
+        versionCode \
+            10000 * appVersionMajor +
+              100 * appVersionMinor +
+                1 * appVersionMicro
+
+        versionName sprintf("%d.%d.%d", appVersionMajor, appVersionMinor, appVersionMicro)
     }
 }
 

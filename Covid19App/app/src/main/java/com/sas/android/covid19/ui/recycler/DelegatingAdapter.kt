@@ -199,6 +199,7 @@ abstract class DelegatingAdapter<T>(
      * Private methods
      */
 
-    private fun getItemTypeString(item: T) =
-        if (item == null) "null" else (item as Any)::class.qualifiedName
+    private fun getItemTypeString(item: T) = item?.let {
+        it::class.qualifiedName ?: it::class.java.name
+    }
 }

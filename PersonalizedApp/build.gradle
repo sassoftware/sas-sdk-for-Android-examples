@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        cfgKotlinVersion = '1.3.72'
+        cfgKotlinVersion = '1.4.21'
 
         // Maven URL for a local maven repository. Set this environment variable to point to the
         // repository if you are using one.
@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$cfgKotlinVersion"
 
         // https://github.com/trello/victor
