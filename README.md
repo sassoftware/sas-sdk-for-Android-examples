@@ -23,7 +23,7 @@ You should be able to build and run the example projects on an emulator or devic
 
 ### Personalize and Pre-configure:
 
-The first step app developers using the SAS SDK may want to take is to personalize the exising SAS Visual Analytics app by building a mobile app that uses their app name and icon. This can be done by creating a project with just resource files for your app name, icon and other assets. You can also pre-configure the connections to the SAS Visual Analytics Server and the reports that you would like to be downloaded in a connections.json file under the assets folder.
+The first step app developers using the SAS SDK may want to take is to personalize the existing SAS Visual Analytics app by building a mobile app that uses their app name and icon. This can be done by creating a project with just resource files for your app name, icon and other assets. You can also pre-configure the connections to the SAS Visual Analytics server and the reports that you would like to be downloaded in a connections.json file under the assets folder.
 
 No code is necessary for these use cases.
 
@@ -48,6 +48,36 @@ If you manage and secure your mobile devices with a Mobile Device Management (MD
 * [HttpHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-http-handler/index.html)
 * [ShareHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-share-handler/index.html)
 * [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences)
+
+## A note about security
+
+Connections to SAS Visual Analytics servers are subject to the [network security
+configuration](https://developer.android.com/training/articles/security-config) defined by the
+application. Namely, starting with Android 9 (API level 28), cleartext (HTTP) connections are
+disabled (**by Android**) by default.
+
+It is recommended that all SAS Visual Analytics servers be set up to allow only secure (HTTPS)
+connections. However, in situations where your app must connect to a server via HTTP, a less
+restrictive network security configuration can be put in place:
+
+```xml
+<network-security-config
+    xmlns:tools="http://schemas.android.com/tools"
+>
+    <!--
+     * Allow HTTP connections
+     * Use <domain-config> for a more precise policy
+     -->
+    <base-config
+        cleartextTrafficPermitted="true"
+    />
+</network-security-config>
+```
+
+This file must be [referenced from AndroidManifest.xml](https://developer.android.com/training/articles/security-config#manifest).
+
+**Note that such a configuration reduces the overall security throughout the app, and should be
+avoided if possible.**
 
 ## License
 This project is licensed under this commercial [license](LICENSE.txt).

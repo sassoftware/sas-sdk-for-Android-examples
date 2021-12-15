@@ -5,7 +5,7 @@ import com.sas.android.visualanalytics.sdk.ReportDescriptor
 
 /**
  * Sample ConnectionCreateDescriptor implementation that defines the connection to the
- * VA Try server and paths to four sample reports.
+ * VA Try server and URIs to four sample reports.
  */
 internal class StartupConnectionDescriptor : ConnectionDescriptor {
     override val description = "VA Try"
@@ -15,7 +15,13 @@ internal class StartupConnectionDescriptor : ConnectionDescriptor {
     override val useGuestMode = true
     override val userId = null
     override val useSsl = true
-    override val useStdAuth = false
+
+    // Force this server to use standard (user ID/password) authentication even if it supports web
+    // authentication. This is provided purely as an example; it is not typically necessary since
+    // the algorithm will fall back to standard authentication if a server does not support web
+    // authentication.
+    override val useStdAuth = true
+
     val reports = listOf(
         ReportDescriptor.forUri("faca01f6-c631-4cbf-b336-6ba186dc632e"),
         ReportDescriptor.forUri("1ccd88c8-38a6-4473-90e0-8bdb447510a4"),
