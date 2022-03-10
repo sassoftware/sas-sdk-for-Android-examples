@@ -9,11 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.sas.android.covid19.databinding.ActivityLoadingBinding
 import com.sas.android.covid19.util.onMeasured
 import com.sas.android.visualanalytics.sdk.model.Report
-
 import kotlinx.android.synthetic.main.activity_loading.*
 
 class LoadingActivity : AppCompatActivity() {
@@ -38,12 +36,15 @@ class LoadingActivity : AppCompatActivity() {
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        viewModel.report.observe(this, Observer<Report?> { report ->
-            if (report != null) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+        viewModel.report.observe(
+            this,
+            Observer<Report?> { report ->
+                if (report != null) {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
             }
-        })
+        )
 
         val binding: ActivityLoadingBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_loading)

@@ -3,7 +3,6 @@ package com.sas.android.covid19.ui.recycler
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-
 import com.sas.covid19.kotlin.properties.Delegates
 
 /**
@@ -95,7 +94,8 @@ abstract class RefinableAdapter<T, M>(
     // com.sas.covid19.kotlin.properties.Delegates.observable to invoke
     // onChangedListener every time it is set
     var filter by kotlin.properties.Delegates.observable<((T) -> Boolean)?>(
-            null) { _, _, _ ->
+        null
+    ) { _, _, _ ->
         refineAndNotify(model, model)
     }
 
@@ -106,7 +106,8 @@ abstract class RefinableAdapter<T, M>(
     // com.sas.covid19.kotlin.properties.Delegates.observable to invoke
     // onChangedListener every time it is set
     var sort by kotlin.properties.Delegates.observable<((T, T) -> Int)?>(
-            null) { _, _, _ ->
+        null
+    ) { _, _, _ ->
         refineAndNotify(model, model)
     }
 
@@ -236,7 +237,8 @@ abstract class RefinableAdapter<T, M>(
 
                     override fun areContentsTheSame(oldPos: Int, newPos: Int) =
                         this@RefinableAdapter.areContentsTheSame(
-                            getOldItemAt(oldPos), getNewItemAt(newPos))
+                            getOldItemAt(oldPos), getNewItemAt(newPos)
+                        )
 
                     override fun getOldListSize() =
                         oldRefined?.size ?: getModelItemCount(oldModel)
@@ -246,11 +248,11 @@ abstract class RefinableAdapter<T, M>(
 
                     private fun getOldItemAt(position: Int) =
                         if (oldRefined != null) oldRefined[position]
-                            else getModelItem(position, oldModel)
+                        else getModelItem(position, oldModel)
 
                     private fun getNewItemAt(position: Int) =
                         if (newRefined != null) newRefined[position]
-                            else getModelItem(position, newModel)
+                        else getModelItem(position, newModel)
                 }).dispatchUpdatesTo(this)
             }
         }

@@ -9,5 +9,5 @@ class LoadingViewModelFactory(private val app: MainApplication) : ViewModelProvi
      */
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>) = LoadingViewModel(app) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>) = LoadingViewModel(app) as T
 }

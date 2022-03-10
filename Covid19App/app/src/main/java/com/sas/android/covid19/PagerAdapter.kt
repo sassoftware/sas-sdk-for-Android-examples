@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class PagerAdapter(activity: FragmentActivity, private val locations: List<String>?) :
-        FragmentStateAdapter(activity) {
+    FragmentStateAdapter(activity) {
     /*
      * RecyclerView.Adapter methods
      */

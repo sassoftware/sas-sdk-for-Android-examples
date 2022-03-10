@@ -33,7 +33,8 @@ object UiUtil {
         @ColorRes tint: Int
     ) = ContextCompat.getDrawable(context, drawableId)?.also {
         it.colorFilter = PorterDuffColorFilter(
-            ContextCompat.getColor(context, tint), PorterDuff.Mode.SRC_ATOP)
+            ContextCompat.getColor(context, tint), PorterDuff.Mode.SRC_ATOP
+        )
     }
 
     /**

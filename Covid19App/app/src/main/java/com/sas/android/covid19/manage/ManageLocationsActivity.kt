@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-
 import com.google.android.material.snackbar.Snackbar
 import com.sas.android.covid19.MainApplication
 import com.sas.android.covid19.R
@@ -24,7 +23,6 @@ import com.sas.android.covid19.ui.recycler.ListAdapter
 import com.sas.android.covid19.util.toLocalizedLocation
 import com.sas.covid19.kotlin.move
 import com.sas.covid19.kotlin.with
-
 import kotlinx.android.synthetic.main.activity_manage.*
 
 class ManageLocationsActivity : AppCompatActivity() {
@@ -57,21 +55,26 @@ class ManageLocationsActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        viewModel.selectedLocations.observe(this, Observer<List<String>?> {
-            @Suppress("UNCHECKED_CAST")
-            (recycler.adapter as ListAdapter<String>).model = it
+        viewModel.selectedLocations.observe(
+            this,
+            Observer<List<String>?> {
+                @Suppress("UNCHECKED_CAST")
+                (recycler.adapter as ListAdapter<String>).model = it
 
-            // Without this, spacing before last element is too large
-            recycler.adapter?.notifyDataSetChanged()
+                // Without this, spacing before last element is too large
+                recycler.adapter?.notifyDataSetChanged()
 
-            // Select first element in list on return to MainActivity
-            viewModel.curIndex.value = 0
-        })
+                // Select first element in list on return to MainActivity
+                viewModel.curIndex.value = 0
+            }
+        )
 
         recycler.apply recycler@{
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this@ManageLocationsActivity,
-                LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(
+                this@ManageLocationsActivity,
+                LinearLayoutManager.VERTICAL, false
+            )
 
             val spacing = resources.getDimension(R.dimen.recycler_spacing).toInt()
             addItemDecoration(LinearSpaceItemDecoration(spacing, true, true))
@@ -83,7 +86,8 @@ class ManageLocationsActivity : AppCompatActivity() {
                 override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: ViewHolder) =
                     ItemTouchHelper.Callback.makeMovementFlags(
                         ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-                        ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+                        ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                    )
 
                 override fun isLongPressDragEnabled() = true
 
@@ -92,22 +96,25 @@ class ManageLocationsActivity : AppCompatActivity() {
                     viewHolder: ViewHolder,
                     target: ViewHolder
                 ): Boolean {
-                    val fromPos = viewHolder.adapterPosition
-                    val toPos = target.adapterPosition
+                    val fromPos = viewHolder.bindingAdapterPosition
+                    val toPos = target.bindingAdapterPosition
                     selectedLocations = selectedLocations.move(fromPos, toPos)
                     return true
                 }
 
                 override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
-                    val position = viewHolder.getAdapterPosition()
+                    val position = viewHolder.bindingAdapterPosition
                     val deleted = selectedLocations[position]
                     selectedLocations = selectedLocations.filterIndexed { i, _ ->
                         i != position
                     }
 
-                    Snackbar.make(this@recycler,
-                        getString(R.string.activity_manage_locations_deleted_message,
-                            deleted.toLocalizedLocation(this@ManageLocationsActivity)),
+                    Snackbar.make(
+                        this@recycler,
+                        getString(
+                            R.string.activity_manage_locations_deleted_message,
+                            deleted.toLocalizedLocation(this@ManageLocationsActivity)
+                        ),
                         Snackbar.LENGTH_LONG
                     ).apply {
                         setActionTextColor(ContextCompat.getColor(context, R.color.snackbar_action))
@@ -116,7 +123,8 @@ class ManageLocationsActivity : AppCompatActivity() {
                         }
                         setTextColor(Color.WHITE)
                         setBackgroundTint(
-                            ContextCompat.getColor(context, R.color.snackbar_background))
+                            ContextCompat.getColor(context, R.color.snackbar_background)
+                        )
                         show()
                     }
                 }
@@ -157,8 +165,8 @@ class ManageLocationsActivity : AppCompatActivity() {
 
     companion object {
         fun launch(activity: Activity) = Intent(activity, ManageLocationsActivity::class.java)
-                .also {
-            activity.startActivity(it)
-        }
+            .also {
+                activity.startActivity(it)
+            }
     }
 }

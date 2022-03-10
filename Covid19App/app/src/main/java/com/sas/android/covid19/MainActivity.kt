@@ -1,10 +1,5 @@
 package com.sas.android.covid19
 
-import java.util.Locale
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 import android.content.Intent
 import android.graphics.Color
 import android.location.Geocoder
@@ -22,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
-
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -38,8 +32,10 @@ import com.sas.android.covid19.util.toLocalizedLocation
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.report.ReportObject
 import com.sas.android.visualanalytics.sdk.report.ReportObjectProvider
-
+import java.util.Locale
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     /*
@@ -55,8 +51,10 @@ class MainActivity : AppCompatActivity() {
         MediatorLiveData<ReportObjectProvider?>().apply {
             // Set viewModel.defaultLocations whenever we get a new ReportObjectProvider
             observe(null, true) { _, newValue ->
-                (newValue?.loadReportObjects("ve88574")?.firstOrNull() as?
-                        ReportObject.CategoricalFilter)?.also { filter ->
+                (
+                    newValue?.loadReportObjects("ve88574")?.firstOrNull() as?
+                        ReportObject.CategoricalFilter
+                    )?.also { filter ->
                     lifecycleScope.launch(Dispatchers.Main) {
                         viewModel.defaultLocations.value = listOf(LOCATION_WORLDWIDE) +
                             filter.getUniqueValues()
@@ -70,7 +68,8 @@ class MainActivity : AppCompatActivity() {
                         Report.ReportStatus.REPORT_UNSUBSCRIBED,
                         Report.ReportStatus.REPORT_UNAVAILABLE -> null
                         else -> (application as MainApplication).sasManager.getReportObjectProvider(
-                            report, this@MainActivity, this@MainActivity)
+                            report, this@MainActivity, this@MainActivity
+                        )
                     }
                 }
             }
@@ -216,32 +215,40 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        viewModel.curIndex.observe(this, Observer<Int?> { curIndex ->
-            curIndex?.also {
-                collapsing_toolbar.title =
-                    selectedLocations?.getOrNull(curIndex)?.toLocalizedLocation(this)
-                supportActionBar?.subtitle = null
-                addLocationButton.show()
+        viewModel.curIndex.observe(
+            this,
+            Observer<Int?> { curIndex ->
+                curIndex?.also {
+                    collapsing_toolbar.title =
+                        selectedLocations?.getOrNull(curIndex)?.toLocalizedLocation(this)
+                    supportActionBar?.subtitle = null
+                    addLocationButton.show()
+                }
             }
-        })
+        )
 
         visualLoader.observe(this, true) { _, _ ->
             rebuildPagerAdapter()
         }
 
-        viewModel.selectedLocations.observe(this, Observer<List<String>?> {
-            rebuildPagerAdapter()
-        })
+        viewModel.selectedLocations.observe(
+            this,
+            Observer<List<String>?> {
+                rebuildPagerAdapter()
+            }
+        )
 
         viewModel.reportStatus.observe(this, true) { _, status ->
             if (status == Report.ReportStatus.REPORT_UPDATING) {
-                Snackbar.make(addLocationButton,
+                Snackbar.make(
+                    addLocationButton,
                     getString(R.string.activity_main_updating_message),
                     Snackbar.LENGTH_LONG
                 ).apply {
                     setTextColor(Color.WHITE)
                     setBackgroundTint(
-                        ContextCompat.getColor(context, R.color.snackbar_background))
+                        ContextCompat.getColor(context, R.color.snackbar_background)
+                    )
                     show()
                 }
             }
@@ -268,9 +275,10 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.menu_main_send_feedback -> {
-            val webpage = Uri.parse("https://forms.office.com/Pages/ResponsePage.aspx?" +
+            val url = "https://forms.office.com/Pages/ResponsePage.aspx?" +
                 "id=XE3BsSU2s0WkMJVSNzoML3RNFolnWOBCiL6xGKcJQJtUREVMSE1HQ1hLRjZZSUw4SU1SVVBKTEsx" +
-                "WCQlQCN0PWcu")
+                "WCQlQCN0PWcu"
+            val webpage = Uri.parse(url)
             val intent = Intent(Intent.ACTION_VIEW, webpage)
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
@@ -281,8 +289,10 @@ class MainActivity : AppCompatActivity() {
         R.id.menu_main_about -> {
             lifecycleScope.launch(Dispatchers.Main) {
                 visualLoader.value?.getTitleAndPayloadForLegal(this@MainActivity)?.also { payload ->
-                    showExpanded(payload.view, getString(R.string.menu_main_about), null,
-                        true)
+                    showExpanded(
+                        payload.view, getString(R.string.menu_main_about), null,
+                        true
+                    )
                 }
             }
             true
@@ -328,7 +338,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpLocation() {
         LocationServices.getFusedLocationProviderClient(this).lastLocation.addOnSuccessListener {
-                location ->
+            location ->
             location?.also {
                 val countryName = Geocoder(this, Locale.getDefault())
                     .getFromLocation(location.latitude, location.longitude, 1)

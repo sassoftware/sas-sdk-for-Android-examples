@@ -2,7 +2,6 @@ package com.sas.android.covid19.add
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-
 import com.sas.android.covid19.MainApplication
 import com.sas.android.covid19.util.isWorldwide
 import com.sas.android.covid19.util.toLocalizedLocation
@@ -23,13 +22,15 @@ class AddLocationViewModel(private val app: MainApplication) : ViewModel() {
                 it !in selected
             }.map {
                 it to it.toLocalizedLocation(app)
-            }.sortedWith(Comparator { a, b ->
-                when {
-                    a.first.isWorldwide -> -1
-                    b.first.isWorldwide -> 1
-                    else -> a.second.compareTo(b.second, true)
+            }.sortedWith(
+                Comparator { a, b ->
+                    when {
+                        a.first.isWorldwide -> -1
+                        b.first.isWorldwide -> 1
+                        else -> a.second.compareTo(b.second, true)
+                    }
                 }
-            })
+            )
         }
 
         addSource(allLocations) { _ ->

@@ -23,29 +23,32 @@ fun <T> LiveData<T>.observe(
     observer: (oldValue: T?, newValue: T?) -> Unit
 ) = observePrivate(owner, onlyOnChanged, observer)
 
-private fun <T> LiveData<T>.observePrivate(
+/**
+ * @suppress
+ */
+fun <T> LiveData<T>.observePrivate(
     owner: LifecycleOwner?,
     onlyOnChanged: Boolean = false,
     observer: (oldValue: T?, newValue: T?) -> Any
 ) = object : Observer<T> {
-        private var oldValue: T? = null
+    private var oldValue: T? = null
 
-        override fun onChanged(newValue: T?) {
-            if (!onlyOnChanged || oldValue != newValue) {
-                val result = observer.invoke(oldValue, newValue)
-                if (result is Boolean && result) {
-                    removeObserver(this)
-                }
+    override fun onChanged(newValue: T?) {
+        if (!onlyOnChanged || oldValue != newValue) {
+            val result = observer.invoke(oldValue, newValue)
+            if (result is Boolean && result) {
+                removeObserver(this)
             }
-            oldValue = newValue
         }
-    }.also {
-        if (owner == null) {
-            observeForever(it)
-        } else {
-            observe(owner, it)
-        }
+        oldValue = newValue
     }
+}.also {
+    if (owner == null) {
+        observeForever(it)
+    } else {
+        observe(owner, it)
+    }
+}
 
 /**
  * Observe this LiveData with an observer that provides both the old and the new

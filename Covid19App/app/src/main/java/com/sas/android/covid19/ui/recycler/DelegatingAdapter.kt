@@ -117,8 +117,10 @@ abstract class DelegatingAdapter<T>(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         getItem(position).let {
-            getDelegate(position, it).onBindViewHolder(holder, position, it,
-                this)
+            getDelegate(position, it).onBindViewHolder(
+                holder, position, it,
+                this
+            )
         }
     }
 
@@ -152,8 +154,10 @@ abstract class DelegatingAdapter<T>(
     open fun getDelegate(position: Int?, item: T) =
         delegates?.find {
             it.isDelegateFor(position, item)
-        } ?: error("no delegate found for position $position " +
-            "(${getItemTypeString(item)})")
+        } ?: error(
+            "no delegate found for position $position " +
+                "(${getItemTypeString(item)})"
+        )
 
     /**
      * Gets the ID of the given item, delegating to the given AdapterDelgate.
@@ -176,14 +180,16 @@ abstract class DelegatingAdapter<T>(
         item: T,
         delegate: AdapterDelegate<T>
     ) = delegate.getItemId(position, item, this).also {
-            require(position != null &&
-                    (!hasStableIds() || it != RecyclerView.NO_ID)) {
-                "${this::class.qualifiedName}.hasStableIds() returns true " +
+        require(
+            position != null &&
+                (!hasStableIds() || it != RecyclerView.NO_ID)
+        ) {
+            "${this::class.qualifiedName}.hasStableIds() returns true " +
                 "but ID for position $position (item " +
                 "${getItemTypeString(item)}, delegate " +
                 "${delegate::class.qualifiedName}) is RecyclerView.NO_ID"
-            }
         }
+    }
 
     /**
      * Returns the index of the given AdapterDelegate in the [delegates

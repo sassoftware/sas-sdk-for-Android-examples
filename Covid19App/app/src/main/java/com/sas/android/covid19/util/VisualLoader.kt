@@ -1,20 +1,18 @@
 package com.sas.android.covid19.util
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.StringRes
-
 import com.sas.android.covid19.util.VisualLoader.RenderMethod.AsBitmap
 import com.sas.android.covid19.util.VisualLoader.RenderMethod.AsText
 import com.sas.android.covid19.util.VisualLoader.RenderMethod.AsView
 import com.sas.android.visualanalytics.sdk.report.ReportObject
 import com.sas.android.visualanalytics.sdk.report.ReportObjectProvider
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class VisualLoader(val repObjProvider: ReportObjectProvider) {
     /*
@@ -148,7 +146,8 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
                                     val width = Dimensions.dpToPx(300)
                                     val height = (width / ratio).toInt()
                                     (visual.obj as ReportObject.Visual).renderAsBitmap(
-                                        width, height)
+                                        width, height
+                                    )
                                 }
                                 is AsText -> {
                                     (visual.obj as ReportObject.Text).getTextContent()
@@ -165,14 +164,18 @@ class VisualLoader(val repObjProvider: ReportObjectProvider) {
 
                 when (method) {
                     is AsBitmap -> {
-                        Payload.WithBitmap(title, method.titleIsInner, visual.obj.view, onExpand,
-                            artifact as Bitmap?)
+                        Payload.WithBitmap(
+                            title, method.titleIsInner, visual.obj.view, onExpand,
+                            artifact as Bitmap?
+                        )
                     }
                     is AsText -> {
                         val text = artifact as CharSequence?
                         logV("  text: $text")
-                        Payload.WithText(title, method.titleIsInner, visual.obj.view, onExpand,
-                            text)
+                        Payload.WithText(
+                            title, method.titleIsInner, visual.obj.view, onExpand,
+                            text
+                        )
                     }
                     else -> {
                         error("unreachable")

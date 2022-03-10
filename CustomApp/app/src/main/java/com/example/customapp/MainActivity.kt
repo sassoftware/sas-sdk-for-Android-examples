@@ -11,8 +11,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-import com.sas.android.visualanalytics.sdk.ReportDescriptor
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server
@@ -31,17 +29,22 @@ class MainActivity : AppCompatActivity() {
     private val reports = mutableListOf<Report>()
     private val reportsAdapter = ReportsAdapter()
 
-    private val reportThumbnails = intArrayOf(R.drawable.capital_campaign,
-        R.drawable.retal_insights, R.drawable.warranty_analysis, R.drawable.water_consumption)
+    private val reportThumbnails = intArrayOf(
+        R.drawable.capital_campaign,
+        R.drawable.retal_insights, R.drawable.warranty_analysis, R.drawable.water_consumption
+    )
 
-    private val reportTitles = arrayOf("Capital Campaign", "Retail Insights",
-        "Warranty Analysis", "Water Consumption and Monitoring")
+    private val reportTitles = arrayOf(
+        "Capital Campaign", "Retail Insights",
+        "Warranty Analysis", "Water Consumption and Monitoring"
+    )
 
     private val reportDescriptions = arrayOf(
         "This report shows the donations received towards a campaign goal per state over time",
         "This report shows the performance of three different stores by region and state",
         "This report shows the annual trends in warranty cost as well as cost forecasts.",
-        "This report shows you the location and trends over time of high water consumers.")
+        "This report shows you the location and trends over time of high water consumers."
+    )
 
     /*
      * Activity methods
@@ -62,8 +65,10 @@ class MainActivity : AppCompatActivity() {
         // create SASManager and have it create connection and subscribe to reports listed in
         // StartupConnectionDescriptor
         val connectionDescriptor = StartupConnectionDescriptor()
-        (application as MainApplication).sasManager.create(connectionDescriptor,
-                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
+        (application as MainApplication).sasManager.create(
+            connectionDescriptor,
+            connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete
+        )
     }
 
     /*
@@ -120,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * RecyclerView adapter that provides a list of buttons to open the subscribed reports
      */
-    inner class ReportsAdapter: RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {
+    inner class ReportsAdapter : RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {
         /*
          * RecyclerView.Adapter methods
          */
@@ -168,6 +173,6 @@ class MainActivity : AppCompatActivity() {
          * Classes
          */
 
-        inner class ReportViewHolder(v: View): RecyclerView.ViewHolder(v)
+        inner class ReportViewHolder(v: View) : RecyclerView.ViewHolder(v)
     }
 }

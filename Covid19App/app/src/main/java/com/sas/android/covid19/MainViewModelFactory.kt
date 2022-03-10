@@ -9,5 +9,5 @@ class MainViewModelFactory(private val app: MainApplication) : ViewModelProvider
      */
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>) = MainViewModel(app) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>) = MainViewModel(app) as T
 }

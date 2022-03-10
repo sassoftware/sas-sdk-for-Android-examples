@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
 import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -47,8 +45,10 @@ class MainActivity : AppCompatActivity() {
         // create SASManager and have it create connection and subscribe to reports listed in
         // StartupConnectionDescriptor
         val connectionDescriptor = StartupConnectionDescriptor()
-        (application as MainApplication).sasManager.create(connectionDescriptor,
-                connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete)
+        (application as MainApplication).sasManager.create(
+            connectionDescriptor,
+            connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete
+        )
     }
 
     /*
@@ -65,8 +65,8 @@ class MainActivity : AppCompatActivity() {
     private fun loadReportViewer(report: Report) {
         reportViewController = ReportViewController(this, this, reportView, report.id).also {
             it.addReportEventListener { reportEvent ->
-                when (reportEvent) {
-                    is FullScreenRequest -> supportActionBar?.run {
+                if (reportEvent is FullScreenRequest) {
+                    supportActionBar?.run {
                         if (reportEvent.fullScreen) {
                             hide()
                         } else {

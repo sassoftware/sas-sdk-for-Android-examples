@@ -70,13 +70,16 @@ object Delegates {
             newValue: T
         ) -> Unit = { _, _, _ -> }
     ): ReadWriteProperty<Any?, T> =
-        all(initialValue,
+        all(
+            initialValue,
             { newValue, _ ->
                 val minValue = min()
                 val maxValue = max()
 
-                require(minValue == null || maxValue == null ||
-                        minValue <= maxValue) {
+                require(
+                    minValue == null || maxValue == null ||
+                        minValue <= maxValue
+                ) {
                     "minimum ($minValue) must be less than maximum ($maxValue)!"
                 }
 
@@ -91,7 +94,8 @@ object Delegates {
                 }
 
                 intercepted
-            }, onChanged)
+            }, onChanged
+        )
 
     /**
      * Returns a property delegate for an observable read/write property.

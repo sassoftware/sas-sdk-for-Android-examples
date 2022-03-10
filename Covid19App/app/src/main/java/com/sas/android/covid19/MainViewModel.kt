@@ -2,7 +2,6 @@ package com.sas.android.covid19
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-
 import com.sas.android.covid19.util.logV
 
 class MainViewModel(private val app: MainApplication) : ViewModel() {

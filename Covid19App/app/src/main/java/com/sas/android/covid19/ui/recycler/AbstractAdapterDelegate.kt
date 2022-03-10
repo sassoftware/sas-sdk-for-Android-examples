@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 abstract class AbstractAdapterDelegate<T>(
     @JvmField protected val context: Context,
-    @JvmField @LayoutRes protected val layoutResource: Int
+    @JvmField @LayoutRes
+    protected val layoutResource: Int
 ) : AdapterDelegate<T> {
     /*
      * AdapterDelegate methods

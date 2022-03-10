@@ -22,6 +22,9 @@ internal class StartupConnectionDescriptor : ConnectionDescriptor {
     // authentication.
     override val useStdAuth = true
 
-    val reports = listOf(ReportDescriptor.forFileSystemPath(
-            "/Public/Utilities/Water Consumption and Monitoring"))
+    val reports = listOf(
+        ReportDescriptor.forFileSystemPath(
+            "/Public/Utilities/Water Consumption and Monitoring"
+        )
+    )
 }

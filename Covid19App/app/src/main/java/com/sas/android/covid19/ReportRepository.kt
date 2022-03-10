@@ -1,18 +1,8 @@
 package com.sas.android.covid19
 
-import java.io.IOException
-import java.io.InputStreamReader
-
-import kotlin.coroutines.resume
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sas.android.covid19.util.isWorldwide
@@ -24,7 +14,16 @@ import com.sas.android.visualanalytics.sdk.SASManager.Result
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server.Result as ServerResult
 import com.sas.covid19.kotlin.with
+import java.io.IOException
+import java.io.InputStreamReader
+import kotlin.coroutines.resume
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 
+@OptIn(DelicateCoroutinesApi::class)
 class ReportRepository(private val app: MainApplication) {
     /*
      * Properties/init
@@ -138,7 +137,8 @@ class ReportRepository(private val app: MainApplication) {
                     } else {
                         // Insert at beginning, or just after if worldwide is first
                         val index = if (!selectedLocations.isEmpty() &&
-                            selectedLocations[0].isWorldwide) 1 else 0
+                            selectedLocations[0].isWorldwide
+                        ) 1 else 0
                         logV("Inserting \"$convertedLocation\" at position $index")
                         this.selectedLocations.value =
                             selectedLocations.with(index, convertedLocation)

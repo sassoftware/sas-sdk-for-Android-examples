@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.SparseArray
 import androidx.core.util.set
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
-
 import com.sas.android.covid19.util.isEmpty
 
 /**
@@ -120,8 +119,10 @@ abstract class SelectableAdapter<T>(
 
             selPosToIdMap.clear()
 
-            notifyItemRangeChanged(firstSelPosition,
-                lastSelPosition - firstSelPosition + 1)
+            notifyItemRangeChanged(
+                firstSelPosition,
+                lastSelPosition - firstSelPosition + 1
+            )
             notifySelectionChanged()
         }
     }
@@ -136,7 +137,8 @@ abstract class SelectableAdapter<T>(
             clearSelection()
 
             val positions = savedInstanceState.getIntArray(
-                KEY_SELECTION_POSITIONS)
+                KEY_SELECTION_POSITIONS
+            )
             if (positions != null) {
                 val ids = savedInstanceState.getLongArray(KEY_SELECTION_IDS)
                 check(ids != null && ids.size == positions.size)
@@ -259,7 +261,7 @@ abstract class SelectableAdapter<T>(
     }
 
     private fun setSelected(position: Int, id: Long, isSelected: Boolean):
-            Boolean {
+        Boolean {
         assertSelectionEnabled()
 
         if (isSelected(position) != isSelected) {

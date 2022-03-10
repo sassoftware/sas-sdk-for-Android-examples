@@ -1,9 +1,5 @@
 package com.sas.android.covid19
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-
 import android.animation.ObjectAnimator
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -13,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sas.android.covid19.util.VisualLoader
 import com.sas.android.covid19.util.VisualLoader.Payload
@@ -23,9 +18,11 @@ import com.sas.android.covid19.util.setImageBitmapOrGone
 import com.sas.android.covid19.util.setTextOrGone
 import com.sas.android.covid19.util.setVisibleOrGone
 import com.sas.android.covid19.util.toLocalizedLocation
-
 import kotlinx.android.synthetic.main.delegate_visual.view.*
 import kotlinx.android.synthetic.main.fragment_page.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class PageFragment : Fragment() {
     /*
@@ -62,27 +59,39 @@ class PageFragment : Fragment() {
             }
         }
 
-        mainActivity.visualLoader.observe(this, Observer<VisualLoader?> { _ ->
-            relayout()
-        })
+        mainActivity.visualLoader.observe(
+            this,
+            Observer<VisualLoader?> { _ ->
+                relayout()
+            }
+        )
 
         // Country pages only
         if (!location.isWorldwide) {
             mainActivity.viewModel.apply {
                 // Synchronize scroll positions between pages
-                fromLocation.observe(this@PageFragment, Observer<String?> { fromLocation ->
-                    if (fromLocation == location) {
-                        val pos = scroll.scrollY
-                        mainActivity.viewModel.fromLocationOffset.value = pos
-                        logV("$location is scrolled to: $pos", tag = PageFragment::class)
+                fromLocation.observe(
+                    this@PageFragment,
+                    Observer<String?> { fromLocation ->
+                        if (fromLocation == location) {
+                            val pos = scroll.scrollY
+                            mainActivity.viewModel.fromLocationOffset.value = pos
+                            logV("$location is scrolled to: $pos", tag = PageFragment::class)
+                        }
                     }
-                })
-                fromLocationOffset.observe(this@PageFragment, Observer<Int?> { _ ->
-                    syncScrollIfAppropriate()
-                })
-                toLocation.observe(this@PageFragment, Observer<String?> { _ ->
-                    syncScrollIfAppropriate()
-                })
+                )
+                fromLocationOffset.observe(
+                    this@PageFragment,
+                    Observer<Int?> { _ ->
+                        syncScrollIfAppropriate()
+                    }
+                )
+                toLocation.observe(
+                    this@PageFragment,
+                    Observer<String?> { _ ->
+                        syncScrollIfAppropriate()
+                    }
+                )
 
                 // Synchronize heights between pages so we can scroll to the same offset even if
                 // the visuals haven't yet loaded
@@ -92,12 +101,15 @@ class PageFragment : Fragment() {
                         pageMinHeight.value = height
                     }
                 }
-                pageMinHeight.observe(this@PageFragment, Observer<Int?> { v ->
-                    if (v != null && v > content.minimumHeight) {
-                        logV("$location: setting minimumHeight to $v")
-                        content.minimumHeight = v
+                pageMinHeight.observe(
+                    this@PageFragment,
+                    Observer<Int?> { v ->
+                        if (v != null && v > content.minimumHeight) {
+                            logV("$location: setting minimumHeight to $v")
+                            content.minimumHeight = v
+                        }
                     }
-                })
+                )
             }
         }
     }
@@ -163,8 +175,10 @@ class PageFragment : Fragment() {
                     payload?.onExpand?.also {
                         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                             it.invoke()
-                            mainActivity.showExpanded(payload.view,
-                                location.toLocalizedLocation(mainActivity), null)
+                            mainActivity.showExpanded(
+                                payload.view,
+                                location.toLocalizedLocation(mainActivity), null
+                            )
                         }
                     }
                 }
@@ -205,9 +219,11 @@ class PageFragment : Fragment() {
          */
 
         fun create(location: String) = PageFragment().apply {
-            setArguments(Bundle().apply {
-                putString(ARG_LOCATION, location)
-            })
+            setArguments(
+                Bundle().apply {
+                    putString(ARG_LOCATION, location)
+                }
+            )
         }
     }
 }

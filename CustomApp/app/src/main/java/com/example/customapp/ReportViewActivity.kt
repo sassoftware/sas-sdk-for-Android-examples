@@ -6,10 +6,8 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-
 import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
-
 import kotlinx.android.synthetic.main.activity_report_view.*
 
 internal class ReportViewActivity : AppCompatActivity() {
@@ -39,8 +37,8 @@ internal class ReportViewActivity : AppCompatActivity() {
         val reportId = intent.getStringExtra(ReportViewActivity.EXTRA_REPORT_ID)!!
         reportViewController = ReportViewController(this, this, reportView, reportId).also {
             it.addReportEventListener { reportEvent ->
-                when (reportEvent){
-                    is FullScreenRequest -> supportActionBar?.run {
+                if (reportEvent is FullScreenRequest) {
+                    supportActionBar?.run {
                         if (reportEvent.fullScreen) {
                             hide()
                         } else {
@@ -64,8 +62,11 @@ internal class ReportViewActivity : AppCompatActivity() {
             true
         }
 
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(
-                ContextCompat.getColor(this, R.color.colorPrimary)))
+        supportActionBar?.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(this, R.color.colorPrimary)
+            )
+        )
         return returnValue
     }
 

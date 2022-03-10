@@ -1,9 +1,5 @@
 package com.sas.android.covid19.add
 
-import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 import android.app.Activity
 import android.app.SearchManager
 import android.content.Intent
@@ -22,12 +18,13 @@ import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-
 import com.sas.android.covid19.MainApplication
 import com.sas.android.covid19.R
 import com.sas.android.covid19.util.UiUtil
-
+import kotlin.properties.Delegates.observable
 import kotlinx.android.synthetic.main.activity_add.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AddLocationActivity : AppCompatActivity() {
     /*
@@ -120,8 +117,10 @@ class AddLocationActivity : AppCompatActivity() {
         val searchView = searchItem?.actionView as SearchView
 
         // Hackishly reduce overly-large left margin
-        (searchView.findViewById<View>(R.id.search_edit_frame)
-            ?.layoutParams as? MarginLayoutParams)?.leftMargin = 0
+        (
+            searchView.findViewById<View>(R.id.search_edit_frame)
+                ?.layoutParams as? MarginLayoutParams
+            )?.leftMargin = 0
 
         // Offer suggestions immediately
         searchView.findViewById<AutoCompleteTextView>(R.id.search_src_text)?.threshold = 0
@@ -130,8 +129,10 @@ class AddLocationActivity : AppCompatActivity() {
 
         val from = arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1)
         val to = intArrayOf(R.id.textView)
-        val cursorAdapter = SimpleCursorAdapter(this, R.layout.delegate_location_search, null,
-            from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
+        val cursorAdapter = SimpleCursorAdapter(
+            this, R.layout.delegate_location_search, null,
+            from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        )
         val suggestions = viewModel.suggestions.value!!
 
         fun addLocation(query: String?) {
@@ -175,8 +176,12 @@ class AddLocationActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-                val cursor = MatrixCursor(arrayOf(BaseColumns._ID,
-                    SearchManager.SUGGEST_COLUMN_TEXT_1))
+                val cursor = MatrixCursor(
+                    arrayOf(
+                        BaseColumns._ID,
+                        SearchManager.SUGGEST_COLUMN_TEXT_1
+                    )
+                )
                 query?.let {
                     suggestions.forEachIndexed { i, suggestion ->
                         val localized = suggestion.second
@@ -199,8 +204,11 @@ class AddLocationActivity : AppCompatActivity() {
             override fun onSuggestionClick(position: Int): Boolean {
                 UiUtil.hideKeyboard(this@AddLocationActivity)
                 val cursor = searchView.suggestionsAdapter.getItem(position) as Cursor
-                val selection = cursor.getString(cursor.getColumnIndex(
-                    SearchManager.SUGGEST_COLUMN_TEXT_1))
+                val selection = cursor.getString(
+                    cursor.getColumnIndex(
+                        SearchManager.SUGGEST_COLUMN_TEXT_1
+                    )
+                )
                 addLocation(selection)
                 return true
             }

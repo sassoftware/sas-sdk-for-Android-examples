@@ -3,16 +3,14 @@ package com.sas.android.covid19.manage
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-
 import com.sas.android.covid19.R
 import com.sas.android.covid19.ui.recycler.AbstractAdapterDelegate
 import com.sas.android.covid19.ui.recycler.DelegatingAdapter
 import com.sas.android.covid19.util.toLocalizedLocation
-
 import kotlinx.android.synthetic.main.delegate_location.view.*
 
 class LocationDelegate(context: Context) :
-        AbstractAdapterDelegate<String>(context, R.layout.delegate_location) {
+    AbstractAdapterDelegate<String>(context, R.layout.delegate_location) {
     /*
      * AdapterDelegate methods
      */

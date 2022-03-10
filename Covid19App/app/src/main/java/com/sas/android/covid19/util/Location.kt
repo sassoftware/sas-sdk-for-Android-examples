@@ -1,7 +1,6 @@
 package com.sas.android.covid19.util
 
 import android.content.Context
-
 import com.sas.android.covid19.R
 
 /*

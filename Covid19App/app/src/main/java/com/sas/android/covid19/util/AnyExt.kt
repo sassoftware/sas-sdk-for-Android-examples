@@ -1,11 +1,9 @@
 package com.sas.android.covid19.util
 
+import android.util.Log
 import java.io.PrintWriter
 import java.io.StringWriter
-
 import kotlin.reflect.KClass
-
-import android.util.Log
 
 private fun Any.log(
     priority: Int,

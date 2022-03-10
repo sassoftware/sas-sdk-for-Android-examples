@@ -1,4 +1,4 @@
-apply from: '../../common.gradle'
+apply from: '../../common-app.gradle'
 apply from: '../../ktlint.gradle'
 
 android {
@@ -18,9 +18,8 @@ android {
 }
 
 dependencies {
-    implementation 'com.sas.android.visualanalytics:toolkit:28.18.0'
+    implementation 'com.sas.android.visualanalytics:toolkit:29.0.0'
 
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "androidx.constraintlayout:constraintlayout:1.1.3"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$cfgKotlinVersion"
 }

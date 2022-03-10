@@ -1,8 +1,5 @@
 package com.sas.android.covid19.view
 
-import kotlin.properties.Delegates
-import kotlin.random.Random
-
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -13,11 +10,12 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-
 import com.sas.android.covid19.util.Dimensions
 import com.sas.android.covid19.util.getStyledAttributes
 import com.sas.android.covid19.util.logV
 import com.sas.android.covid19.util.onMeasured
+import kotlin.properties.Delegates
+import kotlin.random.Random
 
 class Spots : View {
     /*
@@ -25,9 +23,9 @@ class Spots : View {
      */
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) :
-            super(context, attrs, defStyle) {
-        init(attrs)
-    }
+        super(context, attrs, defStyle) {
+            init(attrs)
+        }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(attrs)

@@ -1,10 +1,9 @@
 package com.sas.android.covid19.util
 
-import kotlin.sequences.Sequence
-
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import kotlin.sequences.Sequence
 
 /*
  * ViewGroup extension properties
