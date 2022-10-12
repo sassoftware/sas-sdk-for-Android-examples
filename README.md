@@ -39,7 +39,6 @@ Examples:
 
 * [SimpleCustomApp](SimpleCustomApp)
 * [CustomApp](CustomApp)
-* [Covid19App](Covid19App)
 
 ### Manage
 If you manage and secure your mobile devices with a Mobile Device Management (MDM) solution, you can integrate your mobile apps with your MDM solution by using the SAS SDK. This is done by providing custom implementations of the various interfaces in [SASManagerContext](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-s-a-s-manager-context/index.html), namely:
@@ -48,6 +47,18 @@ If you manage and secure your mobile devices with a Mobile Device Management (MD
 * [HttpHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-http-handler/index.html)
 * [ShareHandler](https://developer.sas.com/sdk/mobile/android/doc/current/toolkit/com.sas.android.visualanalytics.sdk/-share-handler/index.html)
 * [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences)
+
+## Theme requirements
+
+The SAS SDK assumes a Material theme (e.g. *Theme.MaterialComponents.\**, *Theme.Material3.\**,
+etc.). If your app uses a non-Material theme, the standard material color attributes should still be
+defined.
+
+:warning: Not defining these color attributes in your theme may cause a runtime exception when
+inflating a `com.sas.android.visualanalytics.report.view.ReportView`.
+
+See the [full list](https://material.io/develop/android/theming/color) of defined color attributes
+and ensure they are defined for your theme.
 
 ## A note about security
 

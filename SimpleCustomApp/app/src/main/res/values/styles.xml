@@ -1,11 +1,12 @@
 <resources>
-
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <!--
+         * Customize Material theme colors. Note that the SAS SDK requires that all Material color attributes
+         * (see https://material.io/develop/android/theming/color) be defined even if not using
+         * a Material theme (e.g. Theme.MaterialComponents.*, * Theme.Material3.*, etc.).
+         -->
+        <item name="colorPrimary">#3F51B5</item>
+        <item name="colorPrimaryDark">#303F9F</item>
+        <item name="colorAccent">#FF4081</item>
     </style>
-
 </resources>

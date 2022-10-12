@@ -1,5 +1,0 @@
-<resources>
-    <style name="MainView">
-        <item name="android:layout_width">600dp</item>
-    </style>
-</resources>
