@@ -1,10 +1,10 @@
 package com.example.simplecustomapp
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.SASManagerContext
 
-class MainApplication : MultiDexApplication() {
+class MainApplication : Application() {
     /*
      * Properties/init
      */

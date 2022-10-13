@@ -1,5 +1,0 @@
-<resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="card_content_margin">16dp</dimen>
-    <dimen name="recycler_spacing">16dp</dimen>
-</resources>

@@ -5,15 +5,18 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import com.example.customapp.databinding.ActivityReportViewBinding
+import com.example.util.viewBinding
+import com.google.android.material.color.MaterialColors
 import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
-import kotlinx.android.synthetic.main.activity_report_view.*
 
 internal class ReportViewActivity : AppCompatActivity() {
     /*
      * Properties/init
      */
+
+    val binding by viewBinding(ActivityReportViewBinding::inflate)
 
     private lateinit var reportViewController: ReportViewController
 
@@ -30,12 +33,13 @@ internal class ReportViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_report_view)
+        setContentView(binding.root)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // get report id from intent extra and pass it to ReportViewController
         val reportId = intent.getStringExtra(ReportViewActivity.EXTRA_REPORT_ID)!!
-        reportViewController = ReportViewController(this, this, reportView, reportId).also {
+        reportViewController = ReportViewController(this, this, binding.reportView, reportId).also {
             it.addReportEventListener { reportEvent ->
                 if (reportEvent is FullScreenRequest) {
                     supportActionBar?.run {
@@ -64,7 +68,7 @@ internal class ReportViewActivity : AppCompatActivity() {
 
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(
-                ContextCompat.getColor(this, R.color.colorPrimary)
+                MaterialColors.getColor(this, R.attr.colorPrimary, null)
             )
         )
         return returnValue

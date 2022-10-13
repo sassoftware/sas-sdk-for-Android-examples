@@ -1,0 +1,6 @@
+[*.{kt,kts}]
+max_line_length = 100
+
+# Sort imports alphabetically, per:
+# https://developer.android.com/kotlin/style-guide#import_statements
+ij_kotlin_imports_layout = *

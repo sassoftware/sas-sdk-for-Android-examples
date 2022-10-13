@@ -2,33 +2,30 @@ package com.example.simplecustomapp
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.simplecustomapp.databinding.ActivityMainBinding
+import com.example.util.viewBinding
 import com.sas.android.visualanalytics.report.controller.FullScreenRequest
 import com.sas.android.visualanalytics.report.controller.ReportViewController
 import com.sas.android.visualanalytics.sdk.SASManager
 import com.sas.android.visualanalytics.sdk.model.Report
 import com.sas.android.visualanalytics.sdk.model.Server
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     /*
      * Properties/init
      */
 
-    private lateinit var connection: Server
-    private lateinit var reportViewController: ReportViewController
-    private lateinit var reportProgress: View
-    private lateinit var progressText: TextView
+    val binding by viewBinding(ActivityMainBinding::inflate)
 
-    private val reports = mutableListOf<Report>()
+    private var rvc: ReportViewController? = null
 
     /*
      * Activity methods
      */
 
     override fun onBackPressed() {
-        if (reportViewController.onBackPressed()) {
+        if (rvc?.onBackPressed() == true) {
             return
         }
         super.onBackPressed()
@@ -36,18 +33,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        reportProgress = findViewById(R.id.report_progress)
-        progressText = findViewById(R.id.progress_text)
-        progressText.text = "Creating Connection"
+        binding.message.text = "Creating Connection"
 
-        // create SASManager and have it create connection and subscribe to reports listed in
+        // Create SASManager and have it create connection and subscribe to reports listed in
         // StartupConnectionDescriptor
-        val connectionDescriptor = StartupConnectionDescriptor()
+        val descriptor = StartupConnectionDescriptor()
         (application as MainApplication).sasManager.create(
-            connectionDescriptor,
-            connectionDescriptor.reports, ::onConnectionComplete, ::onSubscribeComplete
+            descriptor,
+            descriptor.reports,
+            ::onConnectionComplete,
+            ::onSubscribeComplete
         )
     }
 
@@ -55,15 +52,11 @@ class MainActivity : AppCompatActivity() {
      * Private methods
      */
 
-    private fun connectionReady() {
-        progressText.text = "Connection created. Subscribing to report."
-    }
-
     /**
-     * Launch custom report view activity. Pass in the report id from SubscribeListener Result
+     * Launch a custom report view activity, passing in the report id from SubscribeListener Result.
      */
     private fun loadReportViewer(report: Report) {
-        reportViewController = ReportViewController(this, this, reportView, report.id).also {
+        rvc = ReportViewController(this, this, binding.reportView, report.id).also {
             it.addReportEventListener { reportEvent ->
                 if (reportEvent is FullScreenRequest) {
                     supportActionBar?.run {
@@ -76,32 +69,32 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        reportLayoutRoot.visibility = View.VISIBLE
-        reportProgress.visibility = View.GONE
+        binding.reportLayoutRoot.visibility = View.VISIBLE
+        binding.loading.visibility = View.GONE
     }
 
     /**
-     * Sample onConnectionComplete() to illustrate the callback from the connection creation process
+     * Sample onConnectionComplete to illustrate the callback from the connection creation process.
      */
     private fun onConnectionComplete(result: SASManager.Result) {
-        if (result is SASManager.Result.Success) {
-            connection = result.server
-            connectionReady()
+        when (result) {
+            is SASManager.Result.Success -> {
+                binding.message.text = "Connection created. Subscribing to report…"
+            }
+
+            is SASManager.Result.Failure -> {
+                binding.message.text = result.message ?: result.state.toString()
+                binding.progress.visibility = View.GONE
+            }
         }
     }
 
     /**
-     * Sample onSubscribeComplete to illustrate the callback from the report subscription process
+     * Sample onSubscribeComplete to illustrate the callback from the report subscription process.
      */
     private fun onSubscribeComplete(result: Server.Result) {
         if (result is Server.Result.Success) {
-            val report = result.report
-            reports.add(report)
-            reportSubscribed(report)
+            loadReportViewer(result.report)
         }
-    }
-
-    private fun reportSubscribed(report: Report) {
-        loadReportViewer(report)
     }
 }
