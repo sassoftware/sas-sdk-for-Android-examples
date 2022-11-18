@@ -3,5 +3,4 @@
     tools:locale="en"
 >
     <string name="sas_sdk_application_name">Personalized App</string>
-    <string name="sas_sdk_navdrawer_header_title">Personalized App</string>
 </resources>

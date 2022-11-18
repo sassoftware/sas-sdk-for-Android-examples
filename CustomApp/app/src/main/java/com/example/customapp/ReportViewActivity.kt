@@ -24,6 +24,7 @@ internal class ReportViewActivity : AppCompatActivity() {
      * Activity methods
      */
 
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         if (reportViewController.onBackPressed()) {
             return

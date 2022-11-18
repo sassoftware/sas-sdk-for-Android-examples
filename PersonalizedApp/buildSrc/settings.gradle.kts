@@ -5,5 +5,3 @@ pluginManagement {
         mavenCentral()
     }
 }
-
-include(":app")
