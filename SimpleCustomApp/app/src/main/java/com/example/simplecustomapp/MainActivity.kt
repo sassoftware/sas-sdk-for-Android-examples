@@ -2,6 +2,7 @@ package com.example.simplecustomapp
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.simplecustomapp.databinding.ActivityMainBinding
 import com.example.util.viewBinding
@@ -24,16 +25,11 @@ class MainActivity : AppCompatActivity() {
      * Activity methods
      */
 
-    override fun onBackPressed() {
-        if (rvc?.onBackPressed() == true) {
-            return
-        }
-        super.onBackPressed()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        setUpOnBackPressed()
 
         binding.message.text = "Creating Connection"
 
@@ -96,5 +92,18 @@ class MainActivity : AppCompatActivity() {
         if (result is Server.Result.Success) {
             loadReportViewer(result.report)
         }
+    }
+
+    private fun setUpOnBackPressed() {
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val handled = rvc?.onBackPressed() ?: false
+                    if (!handled) {
+                        finish()
+                    }
+                }
+            }
+        )
     }
 }

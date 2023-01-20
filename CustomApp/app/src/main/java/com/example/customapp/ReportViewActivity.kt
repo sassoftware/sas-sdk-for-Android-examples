@@ -4,6 +4,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customapp.databinding.ActivityReportViewBinding
 import com.example.util.viewBinding
@@ -23,14 +24,6 @@ internal class ReportViewActivity : AppCompatActivity() {
     /*
      * Activity methods
      */
-
-    @Suppress("DEPRECATION")
-    override fun onBackPressed() {
-        if (reportViewController.onBackPressed()) {
-            return
-        }
-        super.onBackPressed()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +46,8 @@ internal class ReportViewActivity : AppCompatActivity() {
                 }
             }
         }
+
+        setUpOnBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -78,6 +73,23 @@ internal class ReportViewActivity : AppCompatActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         reportViewController.onPrepareOptionsMenu(menu)
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    /*
+     * Private methods
+     */
+
+    private fun setUpOnBackPressed() {
+        onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val handled = reportViewController.onBackPressed()
+                    if (!handled) {
+                        finish()
+                    }
+                }
+            }
+        )
     }
 
     /*
