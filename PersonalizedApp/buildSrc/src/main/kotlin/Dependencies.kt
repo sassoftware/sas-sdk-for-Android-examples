@@ -9,20 +9,17 @@ object Versions {
         }
     }
 
-    val java = JavaVersion.VERSION_1_8
+    val java = JavaVersion.VERSION_11
 
     object kotlin {
-        // These are not identical, but should be kept in lockstep; see
-        // https://kotlinlang.org/docs/releases.html#release-details
-        const val lang = "1.7.10"
-        const val coroutines = "1.6.4"
+        const val lang = "1.8.10"
     }
 }
 
 object Libs {
     object android {
         object plugin {
-            const val version = "7.3.0"
+            const val version = "7.4.1"
             const val plugin = "com.android.tools.build:gradle:$version"
         }
     }

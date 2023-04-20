@@ -9,31 +9,28 @@ object Versions {
         }
     }
 
-    val java = JavaVersion.VERSION_1_8
+    val java = JavaVersion.VERSION_11
 
     object kotlin {
-        // These are not identical, but should be kept in lockstep; see
-        // https://kotlinlang.org/docs/releases.html#release-details
-        const val lang = "1.7.10"
-        const val coroutines = "1.6.4"
+        const val lang = "1.8.10"
     }
 }
 
 object Libs {
     object android {
         object plugin {
-            const val version = "7.3.0"
+            const val version = "7.4.1"
             const val plugin = "com.android.tools.build:gradle:$version"
         }
     }
 
     object androidx {
-        const val appcompat = "androidx.appcompat:appcompat:1.5.1"
+        const val appcompat = "androidx.appcompat:appcompat:1.6.1"
         const val constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
         const val recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
     }
 
     object google {
-        const val androidMaterial = "com.google.android.material:material:1.6.1"
+        const val androidMaterial = "com.google.android.material:material:1.8.0"
     }
 }
