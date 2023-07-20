@@ -64,7 +64,7 @@ internal class ReportViewActivity : AppCompatActivity() {
 
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(
-                MaterialColors.getColor(this, R.attr.colorPrimary, null)
+                MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary, null)
             )
         )
         return returnValue

@@ -9,17 +9,17 @@ object Versions {
         }
     }
 
-    val java = JavaVersion.VERSION_11
+    val java = JavaVersion.VERSION_17
 
     object kotlin {
-        const val lang = "1.8.10"
+        const val lang = "1.8.21"
     }
 }
 
 object Libs {
     object android {
         object plugin {
-            const val version = "7.4.1"
+            const val version = "8.0.2"
             const val plugin = "com.android.tools.build:gradle:$version"
         }
     }

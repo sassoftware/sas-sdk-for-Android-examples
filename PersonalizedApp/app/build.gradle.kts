@@ -5,7 +5,9 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Versions.android.sdk.compile)
+    namespace = "com.example.personalizedapp"
+
+    compileSdk = Versions.android.sdk.compile
 
     defaultConfig {
         minSdk = Versions.android.sdk.min
