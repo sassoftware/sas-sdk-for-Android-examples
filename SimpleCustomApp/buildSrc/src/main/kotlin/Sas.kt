@@ -1,6 +1,6 @@
 object Sas {
     object sdk {
-        const val version = "30.18.0"
+        const val version = "30.19.0"
         const val groupId = "com.sas.android.visualanalytics"
         const val appbase = "$groupId:appbase:$version"
         const val toolkit = "$groupId:toolkit:$version"
